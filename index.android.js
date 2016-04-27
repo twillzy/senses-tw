@@ -1,8 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
-
 import React, {
   AppRegistry,
   Component,
@@ -11,21 +6,33 @@ import React, {
   View
 } from 'react-native';
 
+var MK = require('react-native-material-kit');
+var {
+  MKButton,
+  MKColor,
+} = MK;
+
 class senses extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Shake or press menu button for dev menu
-        </Text>
+        <MKButton
+          backgroundColor="white"
+          borderRadius={4}
+          padding={15}
+          onPress={this._handlePress}
+          >
+          <Text pointerEvents="none"
+                style={{color: '#66E5C8', fontWeight: 'bold',}}>
+            START SENSING
+          </Text>
+        </MKButton>
       </View>
     );
+  }
+
+  _handlePress(event) {
+    console.warn('Clicked!');
   }
 }
 
@@ -34,18 +41,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    backgroundColor: '#4E92DF',
+  }
 });
 
 AppRegistry.registerComponent('senses', () => senses);
