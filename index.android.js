@@ -13,7 +13,17 @@ var {
 } = MK;
 
 class senses extends Component {
+
+  constructor(props) {
+    super(props); 
+    this.state = {
+      isCurrentlySensing: false,
+    };
+  }
+
   render() {
+    var text = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
+
     return (
       <View style={styles.container}>
         <MKButton
@@ -24,7 +34,7 @@ class senses extends Component {
           >
           <Text pointerEvents="none"
                 style={{color: '#66E5C8', fontWeight: 'bold',}}>
-            START SENSING
+            {text}
           </Text>
         </MKButton>
       </View>
@@ -32,7 +42,7 @@ class senses extends Component {
   }
 
   _handlePress(event) {
-    console.warn('Clicked!');
+    console.warn("clicked!");
   }
 }
 
