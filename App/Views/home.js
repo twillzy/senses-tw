@@ -8,6 +8,8 @@ import MK, {
   MKButton,
 } from 'react-native-material-kit';
 
+import ToastAndroidLOL from './../../App/Modules/ToastModule';
+
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -38,6 +40,7 @@ export default class Home extends Component {
   }
 
   handlePress(event) {
+    ToastAndroidLOL.show('Awesome', ToastAndroidLOL.SHORT);
     this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
   }
 }
