@@ -1,16 +1,16 @@
 package com.senses.reactmodules;
 
-import android.bluetooth.BluetoothAdapter;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.senses.services.ShimmerService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
-    private BluetoothAdapter mBluetoothAdapter;
+    private ShimmerService shimmerService;
 
     public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -26,5 +26,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         return constants;
+    }
+
+    @ReactMethod
+    public void connectToShimmer() {
+        shimmerService.connectShimmer("mac address", "blah");
     }
 }
