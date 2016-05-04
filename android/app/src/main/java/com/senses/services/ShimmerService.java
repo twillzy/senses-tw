@@ -219,19 +219,19 @@ public class ShimmerService extends Service {
 
     public boolean deviceIsStreaming() {
         boolean deviceStreaming = false;
-        if (shimmer != null && shimmer.getStreamingStatus() == true) {
+        if (shimmer != null && shimmer.getStreamingStatus()) {
             deviceStreaming = true;
         }
         return deviceStreaming;
     }
 
     public void closeAndRemoveFile(String bluetoothAddress) {
-        if (mEnableLogging == true) {
+        if (mEnableLogging) {
             shimmerLog.closeFile();
         }
     }
 
-    public int getShimmerVersion(String bluetoothAddress) {
+    public int getShimmerVersion() {
         int version = 0;
         if (shimmer != null) {
             version = shimmer.getShimmerVersion();
@@ -239,7 +239,7 @@ public class ShimmerService extends Service {
         return version;
     }
 
-    public Shimmer getShimmer(String bluetoothAddress) {
+    public Shimmer getShimmer() {
         return shimmer;
     }
 
