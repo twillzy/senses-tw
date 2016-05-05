@@ -20,7 +20,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection mShimmerConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -32,7 +32,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
         public void onServiceDisconnected(ComponentName componentName) {
             mShimmerService.stopService(mShimmerIntent);
             mShimmerService = null;
-            Log.d("[DEBUG]", "Connecting to Shimmer now");
+            Log.d("[DEBUG]", "Stopped Shimmer Service");
 
         }
     };
@@ -44,7 +44,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
     public void doBindService(ReactApplicationContext reactContext) {
         mShimmerIntent = new Intent(reactContext, ShimmerService.class);
-        reactContext.bindService(mShimmerIntent, mConnection, Context.BIND_AUTO_CREATE);
+        reactContext.bindService(mShimmerIntent, mShimmerConnection, Context.BIND_AUTO_CREATE);
         reactContext.startService(mShimmerIntent);
     }
 
@@ -62,6 +62,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void connectToShimmer() {
         Log.d("[DEBUG]", "Connecting to Shimmer now");
-        mShimmerService.connectShimmer("00:06:66:66:96:86", "Shimmer3");
+        mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
     }
 }

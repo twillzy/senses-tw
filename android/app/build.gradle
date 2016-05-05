@@ -90,6 +90,13 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+
+    lintOptions {
+        quiet true
+        abortOnError false
+        ignoreWarnings true
+    }
+
     splits {
         abi {
             reset()
