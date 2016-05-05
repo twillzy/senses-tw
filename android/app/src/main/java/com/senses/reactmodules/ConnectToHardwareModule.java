@@ -23,20 +23,27 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mShimmerService = ((ShimmerService.LocalBinder) service).getService();
+            System.out.println("============BOUND");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mShimmerService = null;
+            System.out.println("============DEAD " + componentName.toShortString());
+
         }
     };
 
     public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        mShimmerService.bindService(new Intent(getReactApplicationContext(),
-                ShimmerService.class), mConnection, Context.BIND_AUTO_CREATE);
+        doBindService(reactContext);
     }
 
+    public void doBindService(ReactApplicationContext reactContext) {
+        Intent mShimmerIntent = new Intent(reactContext, ShimmerService.class);
+        reactContext.bindService(mShimmerIntent, mConnection, Context.BIND_AUTO_CREATE);
+        reactContext.startService(mShimmerIntent);
+    }
 
     @Override
     public String getName() {
