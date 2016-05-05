@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
     private ShimmerService mShimmerService;
+    private Intent mShimmerIntent = null;
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -28,8 +30,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            mShimmerService.stopService(mShimmerIntent);
             mShimmerService = null;
-            System.out.println("============DEAD " + componentName.toShortString());
+            Log.d("[DEBUG]", "Connecting to Shimmer now");
 
         }
     };
@@ -40,7 +43,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
     }
 
     public void doBindService(ReactApplicationContext reactContext) {
-        Intent mShimmerIntent = new Intent(reactContext, ShimmerService.class);
+        mShimmerIntent = new Intent(reactContext, ShimmerService.class);
         reactContext.bindService(mShimmerIntent, mConnection, Context.BIND_AUTO_CREATE);
         reactContext.startService(mShimmerIntent);
     }
@@ -58,6 +61,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void connectToShimmer() {
+        Log.d("[DEBUG]", "Connecting to Shimmer now");
         mShimmerService.connectShimmer("00:06:66:66:96:86", "Shimmer3");
     }
 }
