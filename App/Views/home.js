@@ -8,7 +8,7 @@ import MK, {
   MKButton,
 } from 'react-native-material-kit';
 
-import ToastAndroidLOL from './../../App/Modules/ToastModule';
+import ConnectToHardwareModule from './../../App/Modules/ToastModule';
 
 export default class Home extends Component {
   constructor(props) {
@@ -40,7 +40,9 @@ export default class Home extends Component {
   }
 
   handlePress(event) {
-    ToastAndroidLOL.show('Awesome', ToastAndroidLOL.SHORT);
+    // ToastAndroidLOL.show('Awesome', ToastAndroidLOL.SHORT);
+    console.warn(ConnectToHardwareModule);
+    ConnectToHardwareModule.connectToShimmer();
     this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
   }
 }

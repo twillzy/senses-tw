@@ -1,5 +1,11 @@
 package com.senses.reactmodules;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -10,10 +16,25 @@ import java.util.Map;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
-    private ShimmerService shimmerService;
+    private ShimmerService mShimmerService;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mShimmerService = ((ShimmerService.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mShimmerService = null;
+        }
+    };
 
     public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        mShimmerService.bindService(new Intent(getReactApplicationContext(),
+                ShimmerService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
 
@@ -30,6 +51,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void connectToShimmer() {
-        shimmerService.connectShimmer("mac address", "blah");
+        mShimmerService.connectShimmer("00:06:66:66:96:86", "Shimmer3");
     }
 }
