@@ -151,14 +151,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import it.gerdavax.easybluetooth.BtSocket;
-import it.gerdavax.easybluetooth.LocalDevice;
-import it.gerdavax.easybluetooth.RemoteDevice;
 //import java.io.FileOutputStream;
 
 public class Shimmer extends ShimmerBluetooth{
-	//generic UUID for serial port protocol
-	private UUID mSPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	// Message types sent from the Shimmer Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
 	public static final int MESSAGE_READ = 2;
@@ -172,28 +167,25 @@ public class Shimmer extends ShimmerBluetooth{
 	public static final int MESSAGE_PACKET_LOSS_DETECTED = 11;
 	public static final int MESSAGE_NOT_SYNC = 12;
 	public static final int MESSAGE_LOG_AND_STREAM_STATUS_CHANGED = 13;
-	
-	// Key names received from the Shimmer Handler 
+	// Key names received from the Shimmer Handler
 	public static final String TOAST = "toast";
-	private final BluetoothAdapter mAdapter;
+	public static final int MSG_STATE_FULLY_INITIALIZED = 3;  // This is the connected state, indicating the device has establish a connection + tx/rx commands and reponses (Initialized)
+	public static final int MSG_STATE_STREAMING = 4;
+	public static final int MSG_STATE_STOP_STREAMING = 5;
 	public final Handler mHandler;
-
+	private final BluetoothAdapter mAdapter;
+	protected String mClassName = "Shimmer";
+	//generic UUID for serial port protocol
+	private UUID mSPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	private ConnectThread mConnectThread;
 	private ConnectedThread mConnectedThread;
 	private boolean mDummy=false;
-	private LocalDevice localDevice;
+	//	private LocalDevice localDevice;
 	//private InputStream mInputStream=null;
 	//private DataInputStream mInStream=null;
 	private DataInputStream mInStream;
 	//private BufferedInputStream mInStream=null;
 	private OutputStream mmOutStream=null;
-
-	public static final int MSG_STATE_FULLY_INITIALIZED = 3;  // This is the connected state, indicating the device has establish a connection + tx/rx commands and reponses (Initialized)
-	public static final int MSG_STATE_STREAMING = 4;
-	public static final int MSG_STATE_STOP_STREAMING = 5;
-
-	protected String mClassName="Shimmer";
-	
 	private int mBluetoothLib=0;												// 0 = default lib, 1 = arduino lib
 	private BluetoothAdapter mBluetoothAdapter = null;
 		
@@ -380,34 +372,6 @@ public class Shimmer extends ShimmerBluetooth{
 			mConnectThread = new ConnectThread(device);
 			mConnectThread.start();
 			setState(STATE_CONNECTING);
-		} else if (bluetoothLibrary=="gerdavax"){
-			mMyBluetoothAddress=address;
-			// Cancel any thread attempting to make a connection
-			if (mState == STATE_CONNECTING) {
-				if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
-			}
-			// Cancel any thread currently running a connection
-			if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
-
-			if (address == null) return;
-			Log.d("ConnectionStatus","Get Local Device  " + address);
-
-			localDevice = LocalDevice.getInstance();
-			RemoteDevice device = localDevice.getRemoteForAddr(address);
-			new ConnectThreadArduino(device).start();
-			setState(STATE_CONNECTING);
-			/*localDevice.init(this, new ReadyListener() {
-   			@Override
-   			public synchronized void ready() {
-
-
-   				//localDevice.destroy();
-
-
-   			}
-   		});*/
-
-
 		}
 	}
 
@@ -529,270 +493,6 @@ public class Shimmer extends ShimmerBluetooth{
 		mHandler.sendMessage(msg);
 	}
 
-	/**
-	 * This thread runs while attempting to make an outgoing connection
-	 * with a device. It runs straight through; the connection either
-	 * succeeds or fails.
-	 */
-	private class ConnectThread extends Thread {
-		private final BluetoothSocket mmSocket;
-		private final BluetoothDevice mmDevice;
-
-		public ConnectThread(BluetoothDevice device) {
-			mmDevice = device;
-			BluetoothSocket tmp = null;
-			Log.d(mClassName,"Start of Default ConnectThread");
-			// Get a BluetoothSocket for a connection with the
-			// given BluetoothDevice
-			try {
-				tmp = device.createInsecureRfcommSocketToServiceRecord(mSPP_UUID); // If your device fails to pair try: device.createInsecureRfcommSocketToServiceRecord(mSPP_UUID)
-			} catch (IOException e) {
-				connectionLost();
-				
-			}
-			mmSocket = tmp;
-		}
-
-		public void run() {
-			setName("ConnectThread");
-
-			// Always cancel discovery because it will slow down a connection
-			mAdapter.cancelDiscovery();
-
-			try {
-				// Connect the device through the socket. This will block
-				// until it succeeds or throws an exception
-				mmSocket.connect();
-			} catch (IOException connectException) {
-				connectionFailed();
-				// Unable to connect; close the socket and get out
-				try {
-					mmSocket.close();
-				} catch (IOException closeException) { }
-				return;
-			}
-			// Reset the ConnectThread because we're done
-			synchronized (Shimmer.this) {
-				mConnectThread = null;
-			}
-			// Start the connected thread
-			connected(mmSocket, mmDevice);
-		}
-
-		public void cancel() {
-			try {
-				mmSocket.close();
-			} catch (IOException e) { }
-		}
-	}
-	//arduino
-	private class ConnectThreadArduino extends Thread {
-
-		//private static final String TAG = "ConnectThread";
-		private final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-		private final RemoteDevice mDevice;
-		private BtSocket mSocket;
-
-		public ConnectThreadArduino(RemoteDevice device) {
-			mDevice = device;
-			Log.d(mClassName," Start of ArduinoConnectThread");
-		}
-
-		public void run() {
-			try {
-				boolean isPaired = false;
-
-				try {
-					isPaired = mDevice.ensurePaired();
-
-
-				}
-				catch (RuntimeException re){
-					re.printStackTrace();
-				}
-
-				//add a timer to wait for the user to pair the device otherwise quit
-				if (!isPaired){
-					Thread.sleep(10000);
-					isPaired = mDevice.ensurePaired();
-				}
-
-				if (!isPaired){
-					Log.d(mClassName, "not paired!");
-					connectionFailed();
-
-
-				}
-				else {
-					Log.d(mClassName, "is paired!");
-					// Let main thread do some stuff to render UI immediately
-					//Thread.yield();
-					// Get a BluetoothSocket to connect with the given BluetoothDevice
-					try {
-						mSocket = mDevice.openSocket(SPP_UUID);
-					} catch (Exception e) {
-						Log.d(mClassName, "Connection via SDP unsuccessful, try to connect via port directly");
-						// 1.x Android devices only work this way since SDP was not part of their firmware then
-						mSocket = mDevice.openSocket(1);
-						//connectionFailed();
-						Log.d(mClassName, "I am here");
-					}
-
-					// Do work to manage the connection (in a separate thread)
-					Log.d(mClassName, "Going to Manage Socket");
-					if (getShimmerState() != STATE_NONE){
-						Log.d(mClassName, "ManagingSocket");
-						manageConnectedSocket(mSocket);
-					}
-				}
-			}
-
-			catch (Exception e) {
-				Log.d(mClassName,"Connection Failed");
-				//sendConnectionFailed(mDevice.getAddress());
-				connectionFailed();
-				e.printStackTrace();
-				if (mSocket != null)
-					try {
-						mSocket.close();
-						Log.d(mClassName,"Arduinothreadclose");
-					} catch (IOException e1) {}
-
-				return;
-			}
-		}
-
-		/** Will cancel an in-progress connection, and close the socket */
-		@SuppressWarnings("unused")
-		public void cancel() {
-			try {
-				if (mSocket != null) mSocket.close();
-				//sendConnectionDisconnected(mDevice.getAddress());
-			} 
-			catch (IOException e) { Log.e("Shimmer", "cannot close socket to " + mDevice.getAddress()); }
-		}
-
-		private void manageConnectedSocket(BtSocket socket){
-			//	    	Logger.d(TAG, "connection established.");
-			// pass the socket to a worker thread
-			String address = mDevice.getAddress();
-			mConnectedThread = new ConnectedThread(socket, address);
-			Log.d(mClassName, "ConnectedThread is about to start");
-			mIOThread = new IOThread();
-			mIOThread.start();
-			mPThread = new ProcessingThread();
-			mPThread.start();
-			// Send the name of the connected device back to the UI Activity
-			mMyBluetoothAddress = mDevice.getAddress();
-			Message msg = mHandler.obtainMessage(Shimmer.MESSAGE_DEVICE_NAME);
-			mHandler.sendMessage(msg);
-			// Send the name of the connected device back to the UI Activity
-			while(!mIOThread.isAlive()){}; 
-			Log.d(mClassName, "alive!!");
-			setState(STATE_CONNECTED);
-			//startStreaming();
-			initialize();
-		}
-	}
-
-
-
-
-	/**
-	 * This thread runs during a connection with a remote device.
-	 * It handles all incoming and outgoing transmissions.
-	 */
-	private class ConnectedThread{
-		private BluetoothSocket mmSocket=null;
-
-		private BtSocket mSocket=null;
-		
-		public ConnectedThread(BluetoothSocket socket) {
-
-			mmSocket = socket;
-			InputStream tmpIn = null;
-			OutputStream tmpOut = null;
-
-			// Get the BluetoothSocket input and output streams
-			try {
-				tmpIn = socket.getInputStream();
-				tmpOut = socket.getOutputStream();
-			} catch (IOException e) {
-				connectionLost();
-			}
-
-			//mInStream = new BufferedInputStream(tmpIn);
-			mInStream = new DataInputStream(tmpIn);
-			mmOutStream = tmpOut;
-		}
-
-		public ConnectedThread(BtSocket socket, String address) {
-			mSocket = socket;
-			//this.mAddress = address;
-			InputStream tmpIn = null;
-			OutputStream tmpOut = null;
-
-			// Get the input and output streams, using temp objects because
-			// member streams are final
-			try {
-				tmpIn = socket.getInputStream();
-				tmpOut = socket.getOutputStream();
-			} catch (Exception e) { Log.d(mClassName,"Connected Thread Error");
-			connectionLost();}
-
-			//mInStream = new BufferedInputStream(tmpIn);
-			mInStream = new DataInputStream(tmpIn);
-			mmOutStream = tmpOut;
-
-		}
-
-		/**
-		 *The received packets are processed here 
-		 */
-	
-		/**
-		 * Write to the connected OutStream.
-		 * @param buffer  The bytes to write
-		 */
-		private void write(byte[] buffer) {
-			try {
-				mmOutStream.write(buffer);
-				Log.d(mClassName, "Command transmitted: " + mMyBluetoothAddress + "; Command Issued: " + mCurrentCommand );
-
-			} catch (IOException e) {
-				Log.d(mClassName, "Command NOT transmitted: " + mMyBluetoothAddress + "; Command Issued: " + mCurrentCommand );
-			}
-		}
-
-		public void cancel() {
-			if(mInStream != null) {
-				try {
-					mInStream.close();
-				} catch (IOException e) {}
-			}
-			if(mmOutStream != null) {
-				try {
-					mmOutStream.close();
-				} catch (IOException e) {}
-			}
-			if(mmSocket != null) {
-				try {
-					if (mBluetoothLib==0){
-						mmSocket.close();
-					}	else {
-						mSocket.close();
-					}
-				} catch (IOException e) {}
-			}
-		}
-	}
-
-
-
-
-
-
 	protected void inquiryDone() {
 		Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
 		Bundle bundle = new Bundle();
@@ -800,7 +500,7 @@ public class Shimmer extends ShimmerBluetooth{
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
 		isReadyForStreaming();
-	}   
+	}
 
 	protected void isReadyForStreaming(){
 		Message msg = mHandler.obtainMessage(MESSAGE_TOAST);
@@ -825,12 +525,12 @@ public class Shimmer extends ShimmerBluetooth{
 		mHandler.sendMessage(msg);
 		Log.d(mClassName,"Shimmer " + mMyBluetoothAddress +" is now Streaming");
 		mHandler.obtainMessage(Shimmer.MESSAGE_STATE_CHANGE, MSG_STATE_STREAMING, -1, new ObjectCluster(mMyName,getBluetoothAddress())).sendToTarget();
-		
+
 	}
 
 	/*
 	 * Set and Get Methods
-	 * */    
+	 * */
 	public void setContinuousSync(boolean continousSync){
 		mContinousSync=continousSync;
 	}
@@ -839,15 +539,11 @@ public class Shimmer extends ShimmerBluetooth{
 		return mStreaming;
 	}
 
-	
-
-
 	/**
 	 * This returns the variable mTransactionCompleted which indicates whether the Shimmer device is in the midst of a command transaction. True when no transaction is taking place. This is deprecated since the update to a thread model for executing commands
 	 * @return mTransactionCompleted
 	 */
-	public boolean getInstructionStatus()
-	{	
+	public boolean getInstructionStatus() {
 		boolean instructionStatus=false;
 		if (mTransactionCompleted == true) {
 			instructionStatus=true;
@@ -863,15 +559,11 @@ public class Shimmer extends ShimmerBluetooth{
 
 	/**
 	 * Purpose of disabling calibration are for logging applications, to reduce the amount of computations needed to compute the data thus reducing risk of a performance bottleneck occuring and maximizing logging performance
-	 * @param enable enables or disables calibration, note that this need to be enabled when using the ID as to calculate 3D orientation, see enable3DOrientation 
+	 * @param enable enables or disables calibration, note that this need to be enabled when using the ID as to calculate 3D orientation, see enable3DOrientation
 	 */
 	public void enableCalibration(boolean enable){
 		mEnableCalibration = enable;
 	}
-
-	
-
-
 
 	public void writeInstruction(){
 		if (getShimmerState() == STATE_CONNECTED) {
@@ -880,18 +572,11 @@ public class Shimmer extends ShimmerBluetooth{
 		}
 	}
 
-
-
-	
-	
 	@Override
 	protected void sendStatusMsgPacketLossDetected() {
 		// TODO Auto-generated method stub
 		mHandler.obtainMessage(Shimmer.MESSAGE_PACKET_LOSS_DETECTED,  new ObjectCluster(mMyName,getBluetoothAddress())).sendToTarget();
 	}
-	
-
-
 
 	@Override
 	protected boolean bytesToBeRead() {
@@ -921,13 +606,44 @@ public class Shimmer extends ShimmerBluetooth{
 			return 0;
 		}
 	}
-
 	
-
 	@Override
 	protected void writeBytes(byte[] data) {
 		// TODO Auto-generated method stub
 		write(data);
+	}
+
+	@Override
+	protected byte[] readBytes(int numberofBytes) {
+		// TODO Auto-generated method stub
+		byte[] b = new byte[numberofBytes];
+		try {
+			//mIN.read(b,0,numberofBytes);
+			mInStream.readFully(b,0,numberofBytes);
+			return(b);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Connection Lost");
+			e.printStackTrace();
+		}
+
+
+		return null;
+	}
+
+	@Override
+	protected byte readByte() {
+		byte[] tb = new byte[1];
+		try {
+			//mInStream.read(tb,0,1);
+			mInStream.readFully(tb,0,1);
+			return tb[0];
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			connectionLost();
+			e.printStackTrace();
+			return 0;
+		}
 	}
 
 	/*
@@ -954,39 +670,6 @@ public class Shimmer extends ShimmerBluetooth{
 		  }
 	}*/
 	
-	@Override
-	protected byte[] readBytes(int numberofBytes) {
-		// TODO Auto-generated method stub
-		byte[] b = new byte[numberofBytes];
-		try {
-			//mIN.read(b,0,numberofBytes);
-			mInStream.readFully(b,0,numberofBytes);
-			return(b);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Connection Lost");
-			e.printStackTrace();
-		}
-			
-			
-		return null;
-	}
-
-	@Override
-	protected byte readByte() {
-		byte[] tb = new byte[1];
-		try {
-			//mInStream.read(tb,0,1);
-			mInStream.readFully(tb,0,1);
-			return tb[0];
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			connectionLost();
-			e.printStackTrace();
-			return 0;
-		}
-	}
-
 	@Override
 	protected void dataHandler(ObjectCluster ojc) {
 		// TODO Auto-generated method stub
@@ -1018,25 +701,25 @@ public class Shimmer extends ShimmerBluetooth{
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
 		mHandler.obtainMessage(Shimmer.MESSAGE_STATE_CHANGE, MSG_STATE_STOP_STREAMING, -1, new ObjectCluster(mMyName,getBluetoothAddress())).sendToTarget();
-		
+
 	}
 
 	@Override
 	protected void logAndStreamStatusChanged() {
 		// TODO Auto-generated method stub
-		
+
 		int docked, sensing;
-		
+
 		if(isDocked())
 			docked=1;
 		else
 			docked=0;
-		
+
 		if(isSensing())
 			sensing=1;
 		else
 			sensing=0;
-		
+
 		mHandler.obtainMessage(Shimmer.MESSAGE_LOG_AND_STREAM_STATUS_CHANGED, docked, sensing).sendToTarget();
 		Log.d(mClassName,"Shimmer " + mMyBluetoothAddress +" Status has changed. Docked: "+docked+" Sensing: "+sensing);
 	}
@@ -1044,7 +727,138 @@ public class Shimmer extends ShimmerBluetooth{
 	@Override
 	protected void processMsgFromCallback(ShimmerMsg shimmerMSG) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	/**
+	 * This thread runs while attempting to make an outgoing connection
+	 * with a device. It runs straight through; the connection either
+	 * succeeds or fails.
+	 */
+	private class ConnectThread extends Thread {
+		private final BluetoothSocket mmSocket;
+		private final BluetoothDevice mmDevice;
+
+		public ConnectThread(BluetoothDevice device) {
+			mmDevice = device;
+			BluetoothSocket tmp = null;
+			Log.d(mClassName, "Start of Default ConnectThread");
+			// Get a BluetoothSocket for a connection with the
+			// given BluetoothDevice
+			try {
+				tmp = device.createInsecureRfcommSocketToServiceRecord(mSPP_UUID); // If your device fails to pair try: device.createInsecureRfcommSocketToServiceRecord(mSPP_UUID)
+			} catch (IOException e) {
+				connectionLost();
+
+			}
+			mmSocket = tmp;
+		}
+
+		public void run() {
+			setName("ConnectThread");
+
+			// Always cancel discovery because it will slow down a connection
+			mAdapter.cancelDiscovery();
+
+			try {
+				// Connect the device through the socket. This will block
+				// until it succeeds or throws an exception
+				mmSocket.connect();
+			} catch (IOException connectException) {
+				connectionFailed();
+				// Unable to connect; close the socket and get out
+				try {
+					mmSocket.close();
+				} catch (IOException closeException) {
+				}
+				return;
+			}
+			// Reset the ConnectThread because we're done
+			synchronized (Shimmer.this) {
+				mConnectThread = null;
+			}
+			// Start the connected thread
+			connected(mmSocket, mmDevice);
+		}
+
+		public void cancel() {
+			try {
+				mmSocket.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
+	/**
+	 * This thread runs during a connection with a remote device.
+	 * It handles all incoming and outgoing transmissions.
+	 */
+	private class ConnectedThread {
+		private BluetoothSocket mmSocket = null;
+
+//		private BtSocket mSocket=null;
+
+		public ConnectedThread(BluetoothSocket socket) {
+
+			mmSocket = socket;
+			InputStream tmpIn = null;
+			OutputStream tmpOut = null;
+
+			// Get the BluetoothSocket input and output streams
+			try {
+				tmpIn = socket.getInputStream();
+				tmpOut = socket.getOutputStream();
+			} catch (IOException e) {
+				connectionLost();
+			}
+
+			//mInStream = new BufferedInputStream(tmpIn);
+			mInStream = new DataInputStream(tmpIn);
+			mmOutStream = tmpOut;
+		}
+
+		/**
+		 *The received packets are processed here
+		 */
+
+		/**
+		 * Write to the connected OutStream.
+		 * @param buffer  The bytes to write
+		 */
+		private void write(byte[] buffer) {
+			try {
+				mmOutStream.write(buffer);
+				Log.d(mClassName, "Command transmitted: " + mMyBluetoothAddress + "; Command Issued: " + mCurrentCommand);
+
+			} catch (IOException e) {
+				Log.d(mClassName, "Command NOT transmitted: " + mMyBluetoothAddress + "; Command Issued: " + mCurrentCommand);
+			}
+		}
+
+		public void cancel() {
+			if (mInStream != null) {
+				try {
+					mInStream.close();
+				} catch (IOException e) {
+				}
+			}
+			if (mmOutStream != null) {
+				try {
+					mmOutStream.close();
+				} catch (IOException e) {
+				}
+			}
+			if (mmSocket != null) {
+				try {
+					if (mBluetoothLib == 0) {
+						mmSocket.close();
+					} else {
+//						mSocket.close();
+					}
+				} catch (IOException e) {
+				}
+			}
+		}
 	}
 
 //	@Override

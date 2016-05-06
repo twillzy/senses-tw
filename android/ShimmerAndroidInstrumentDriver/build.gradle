@@ -23,8 +23,6 @@ android {
     }
 }
 dependencies {
-    compile 'com.android.support:support-v4:23.3.0'
-    compile 'com.androidplot:androidplot-core:0.9.7'
-    compile files('libs/AndroidBluetoothLibrary.jar')
     compile project(':ShimmerDriver')
+    compile 'com.androidplot:androidplot-core:0.9.7'
 }
