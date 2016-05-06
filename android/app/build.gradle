@@ -135,7 +135,8 @@ dependencies {
     compile 'com.facebook.react:react-native:+'
     // From node_modules
     compile project(':RNMaterialKit')
-    provided fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':ShimmerAndroidInstrumentDriver')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 // Run this once to be able to run the application with BUCK
