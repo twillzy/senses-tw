@@ -19,7 +19,7 @@ export default class Home extends Component {
   }
 
   componentWillMount() {
-    async function enableBluetooth() {
+    /*async function enableBluetooth() {
       try {
         let enableBluetooth = await ConnectToHardwareModule.enableBluetooth();
       } catch (e) {
@@ -39,6 +39,7 @@ export default class Home extends Component {
 
     /* TODO: startDiscovery after enableBluetooth. */
     startDiscovery();
+    */
   }
 
   render() {
@@ -63,7 +64,7 @@ export default class Home extends Component {
   }
 
   handlePress(event) {
-    async function getDevices() {
+    /*async function getDevices() {
       try {
         let listOfDevices = await ConnectToHardwareModule.getDevices();
         console.warn(listOfDevices.length);
@@ -73,7 +74,9 @@ export default class Home extends Component {
       }
     }
 
-    getDevices();
+    getDevices();*/
+
+    ConnectToHardwareModule.connectToShimmer();
 
     this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
   }

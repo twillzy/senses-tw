@@ -11,11 +11,19 @@ import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.util.Log;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.senses.services.ShimmerService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +44,30 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     };
 
+    private ShimmerService mShimmerService;
+    private Intent mShimmerIntent = null;
+
+    private ServiceConnection mShimmerConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mShimmerService = ((ShimmerService.LocalBinder) service).getService();
+            System.out.println("============BOUND");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mShimmerService.stopService(mShimmerIntent);
+            mShimmerService = null;
+            Log.d("[DEBUG]", "Stopped Shimmer Service");
+
+        }
+    };
+
     public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
         this.reactContext.addActivityEventListener(this);
+        doBindService(reactContext);
     }
 
     public Boolean isBlueToothSupported() {
@@ -47,6 +75,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             return false;
         }
         return true;
+    }
+
+    public void doBindService(ReactApplicationContext reactContext) {
+        mShimmerIntent = new Intent(reactContext, ShimmerService.class);
+        reactContext.bindService(mShimmerIntent, mShimmerConnection, Context.BIND_AUTO_CREATE);
+        reactContext.startService(mShimmerIntent);
     }
 
     @Override
@@ -120,5 +154,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+    }
+
+    public void connectToShimmer() {
+        Log.d("[DEBUG]", "Connecting to Shimmer now");
+        mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
     }
 }

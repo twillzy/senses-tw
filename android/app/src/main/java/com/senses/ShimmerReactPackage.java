@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class AnExampleReactPackage implements ReactPackage {
+class ShimmerReactPackage implements ReactPackage {
 
   @Override
   public List<Class<? extends JavaScriptModule>> createJSModules() {

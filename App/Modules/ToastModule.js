@@ -8,4 +8,5 @@
  *    ToastAndroid.LONG
  */
 import { NativeModules } from 'react-native';
-module.exports = NativeModules.ToastAndroidLOL;
+// module.exports = NativeModules.ToastAndroidLOL;
+module.exports = NativeModules.ConnectToHardwareModule;
