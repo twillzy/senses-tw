@@ -93,7 +93,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void enableBluetooth(Promise promise) {
         try {
-            if(isBlueToothSupported() == true) {
+            if(isBlueToothSupported()) {
                 if (!mBluetoothAdapter.isEnabled()) {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     reactContext.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT, null);

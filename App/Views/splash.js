@@ -6,6 +6,8 @@ import React, {
   Image,
 } from 'react-native';
 
+import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
+
 export default class Splash extends Component {
 	constructor(props) {
 		super(props);
@@ -19,7 +21,14 @@ export default class Splash extends Component {
 	        </View>
         );
 	}
+}
 
+async function enableBluetooth() {
+  try {
+    let enableBluetooth = await ConnectToHardwareModule.enableBluetooth();
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 var styles = StyleSheet.create({
