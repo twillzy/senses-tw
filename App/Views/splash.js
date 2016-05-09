@@ -7,21 +7,45 @@ import React, {
 } from 'react-native';
 
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
+import reactMixin from 'react-mixin';
+import TimerMixin from 'react-timer-mixin';
+
+var splashMixin = {
+  mixins: [TimerMixin],
+
+  getInitialState: function() {
+    return {
+      progress: 0
+    }
+  }
+};
 
 export default class Splash extends Component {
 	constructor(props) {
 		super(props);
 	}
 
+  static initialState;
+
+  componentDidMount() {
+    this.setTimeout(
+      () => {
+        enableBluetooth();
+      }, 2000
+    );
+  }
+
 	render() {
 		return (
 			<View style={styles.container}>
 				<Image style={styles.centered} source={{uri: 'http://mcdaniel.hu/wp-content/uploads/2015/01/6784063-cute-cats-hd.jpg'}} />
-               	<Text style={styles.whiteText}>SenseS</Text>
-	        </View>
-        );
+        <Text style={styles.whiteText}>SenseS</Text>
+	    </View>
+    );
 	}
 }
+
+reactMixin.onClass(Splash, splashMixin);
 
 async function enableBluetooth() {
   try {
@@ -45,7 +69,7 @@ var styles = StyleSheet.create({
   centered: {
   	marginTop: 100,
   	alignSelf: 'center',
-  	width: 200, 
+  	width: 200,
   	height: 200,
   },
 });
