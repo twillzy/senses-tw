@@ -66,6 +66,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         super(reactContext);
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
+        this.reactContext.addActivityEventListener(this);
         doBindService(reactContext);
     }
 
@@ -101,7 +102,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                 if (!mBluetoothAdapter.isEnabled()) {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     reactContext.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT, null);
-//                    promise.resolve(true);
                 }
             }
         } catch (IllegalViewOperationException e) {
@@ -168,7 +168,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         WritableMap map = Arguments.createMap();
         if (resultCode == -1) {
             map.putString("RESULT_CODE", "OK");
-            Log.d("DEBUG", "resolving promise now");
             this.promise.resolve(map);
         }
         map.putString("RESULT_CODE", "CANCEL");
