@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -15,7 +16,7 @@ import com.senses.services.ShimmerService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
+public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
@@ -39,6 +40,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
     public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        reactContext.addLifecycleEventListener(this);
         doBindService(reactContext);
     }
 
@@ -61,7 +63,23 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void connectToShimmer() {
-        Log.d("[DEBUG]", "Connecting to Shimmer now");
+        Log.d("[DEBUG]", "Connecting to Shimmer3 now");
         mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
+    }
+
+    @Override
+    public void onHostResume() {
+
+    }
+
+    @Override
+    public void onHostPause() {
+
+    }
+
+    @Override
+    public void onHostDestroy() {
+        mShimmerService.stopService(mShimmerIntent);
+        Log.d("[DEBUG]", "Service stopped");
     }
 }

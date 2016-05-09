@@ -70,6 +70,7 @@ public class ShimmerService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onCreate");
     }
@@ -78,7 +79,7 @@ public class ShimmerService extends Service {
     public void onDestroy() {
         Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onDestroy");
-
+        super.onDestroy();
     }
 
     public void disconnectAllDevices() {
