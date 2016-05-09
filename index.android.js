@@ -5,7 +5,7 @@ import React, {
   BackAndroid,
 } from 'react-native';
 
-import Home from './App/Views/home';
+import Splash from './App/Views/splash';
 
 var _navigator;
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -19,16 +19,16 @@ BackAndroid.addEventListener('hardwareBackPress', () => {
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
-  if (route.name === 'home') {
+  if (route.name === 'splash') {
     return (
-      <Home/>
+      <Splash/>
     );
   } 
 };
 
 class senses extends Component {
   render() {
-    var initialRoute = {name: 'home'};
+    var initialRoute = {name: 'splash'};
 
     return (
 	  <Navigator

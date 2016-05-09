@@ -10,7 +10,7 @@ import MK, {
 
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 
-export default class Home extends Component {
+export default class Sense extends Component {
   constructor(props) {
     super(props);
     this.state = {
