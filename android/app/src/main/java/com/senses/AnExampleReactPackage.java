@@ -5,6 +5,8 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.senses.reactmodules.ConnectToHardwareModule;
+import com.senses.reactmodules.ToastModule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +29,7 @@ class AnExampleReactPackage implements ReactPackage {
 
       List<NativeModule> modules = new ArrayList<>();
       modules.add(new ToastModule(reactContext));
+      modules.add(new ConnectToHardwareModule(reactContext));
       return modules;
   }
 }

@@ -8,14 +8,37 @@ import MK, {
   MKButton,
 } from 'react-native-material-kit';
 
-import ToastAndroidLOL from './../../App/Modules/ToastModule';
+import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 
 export default class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isCurrentlySensing: false,
+      isCurrentlySensing: false
     };
+  }
+
+  componentWillMount() {
+    async function enableBluetooth() {
+      try {
+        let enableBluetooth = await ConnectToHardwareModule.enableBluetooth();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function startDiscovery() {
+      try {
+        let prepareForDiscovery = await ConnectToHardwareModule.startDiscovery();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    enableBluetooth();
+
+    /* TODO: startDiscovery after enableBluetooth. */
+    startDiscovery();
   }
 
   render() {
@@ -40,7 +63,18 @@ export default class Home extends Component {
   }
 
   handlePress(event) {
-    ToastAndroidLOL.show('Awesome', ToastAndroidLOL.SHORT);
+    async function getDevices() {
+      try {
+        let listOfDevices = await ConnectToHardwareModule.getDevices();
+        console.warn(listOfDevices.length);
+        console.warn(listOfDevices[0]);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    getDevices();
+
     this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
   }
 }

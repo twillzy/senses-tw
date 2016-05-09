@@ -1,6 +1,9 @@
 package com.senses;
 
+import android.content.Intent;
+
 import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -9,6 +12,7 @@ import java.util.List;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
 
 public class MainActivity extends ReactActivity {
+    private ReactInstanceManager mReactInstanceManager;
 
     /**
      * Returns the name of the main component registered from JavaScript.
@@ -35,9 +39,9 @@ public class MainActivity extends ReactActivity {
     @Override
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
-            new MainReactPackage(),
-            new ReactMaterialKitPackage(),
-            new AnExampleReactPackage()
+                new MainReactPackage(),
+                new ReactMaterialKitPackage(),
+                new AnExampleReactPackage()
         );
     }
 }
