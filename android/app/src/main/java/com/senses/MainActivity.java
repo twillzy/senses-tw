@@ -41,8 +41,6 @@ public class MainActivity extends ReactActivity {
         return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
                 new ReactMaterialKitPackage(),
-                new MainReactPackage(),
-                new ReactMaterialKitPackage(),
                 new ShimmerReactPackage()
         );
     }

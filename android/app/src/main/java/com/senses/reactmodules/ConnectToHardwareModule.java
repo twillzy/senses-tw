@@ -156,6 +156,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     }
 
+    @ReactMethod
     public void connectToShimmer() {
         Log.d("[DEBUG]", "Connecting to Shimmer now");
         mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");

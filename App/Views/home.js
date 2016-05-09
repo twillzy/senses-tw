@@ -37,7 +37,7 @@ export default class Home extends Component {
 
     enableBluetooth();
 
-    /* TODO: startDiscovery after enableBluetooth. */
+    TODO: startDiscovery after enableBluetooth.
     startDiscovery();
     */
   }
