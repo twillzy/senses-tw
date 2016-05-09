@@ -3,21 +3,17 @@ package com.senses.reactmodules;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.Promise;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -28,7 +24,7 @@ import com.senses.services.ShimmerService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener{
+public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
     private static final int REQUEST_ENABLE_BT = 1;
     final ReactApplicationContext reactContext;
@@ -66,7 +62,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
-        this.reactContext.addActivityEventListener(this);
+        this.reactContext.addLifecycleEventListener(this);
         doBindService(reactContext);
     }
 
@@ -136,6 +132,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     }
 
+    @ReactMethod
+    public void connectToShimmer() {
+        Log.d("[DEBUG]", "Connecting to Shimmer3 now");
+        mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
+    }
+
     @Override
     public void onHostResume() {
 
@@ -148,17 +150,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     @Override
     public void onHostDestroy() {
-
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-    }
-
-    @ReactMethod
-    public void connectToShimmer() {
-        Log.d("[DEBUG]", "Connecting to Shimmer now");
-        mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
+        mShimmerService.stopService(mShimmerIntent);
+        Log.d("[DEBUG]", "Service stopped");
     }
 }
