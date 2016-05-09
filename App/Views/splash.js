@@ -52,6 +52,7 @@ async function enableBluetooth() {
     var {
       RESULT_CODE
     } = await ConnectToHardwareModule.enableBluetooth();
+    
     console.log(RESULT_CODE);
   } catch (e) {
     console.error(e);

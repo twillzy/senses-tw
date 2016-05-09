@@ -143,7 +143,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void connectToShimmer() {
-        Log.d("[DEBUG]", "Connecting to Shimmer3 now");
         mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
     }
 
@@ -169,8 +168,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         if (resultCode == -1) {
             map.putString("RESULT_CODE", "OK");
             this.promise.resolve(map);
+        } else {
+            map.putString("RESULT_CODE", "CANCEL");
+            this.promise.resolve(map);
         }
-        map.putString("RESULT_CODE", "CANCEL");
-        this.promise.resolve(map);
     }
 }
