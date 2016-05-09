@@ -131,7 +131,6 @@ android {
 }
 
 dependencies {
-    compile project(':ShimmerDriver')
     compile project(':ShimmerAndroidInstrumentDriver')
     compile 'com.facebook.react:react-native:+'
     // From node_modules

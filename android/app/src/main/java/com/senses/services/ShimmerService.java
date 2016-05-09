@@ -103,9 +103,13 @@ public class ShimmerService extends Service {
     }
 
     public void connectShimmer(String bluetoothAddress, String selectedDevice) {
-        Log.d("Shimmer", "net Connection");
+        if (shimmer != null && shimmer.getShimmerState() != Shimmer.STATE_NONE) {
+            return;
+        }
         shimmer = new Shimmer(this, mHandler, selectedDevice, false);
         shimmer.connect(bluetoothAddress, "default");
+        Log.d("DEBUG", "Shimmer state is connecting : " + (shimmer.getShimmerState()
+                == Shimmer.STATE_CONNECTING));
     }
 
     public void onStop() {

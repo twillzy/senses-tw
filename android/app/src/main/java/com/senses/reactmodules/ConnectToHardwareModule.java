@@ -47,7 +47,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mShimmerService = ((ShimmerService.LocalBinder) service).getService();
-            System.out.println("============BOUND");
+            Log.d("[DEBUG]", "============BOUND");
         }
 
         @Override
