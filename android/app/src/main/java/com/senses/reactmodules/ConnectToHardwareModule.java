@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -18,13 +19,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.ShimmerService;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
 
     private static final int REQUEST_ENABLE_BT = 1;
     final ReactApplicationContext reactContext;
@@ -42,6 +44,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
+    private Promise promise;
 
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
         @Override
@@ -92,17 +95,23 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void enableBluetooth(Promise promise) {
+        this.promise = promise;
         try {
             if(isBlueToothSupported()) {
                 if (!mBluetoothAdapter.isEnabled()) {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     reactContext.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT, null);
-                    promise.resolve(true);
+//                    promise.resolve(true);
                 }
             }
         } catch (IllegalViewOperationException e) {
             promise.reject(e);
         }
+    }
+
+    @ReactMethod
+    public void isBlueToothEnabled(Promise promise) {
+        promise.resolve(mBluetoothAdapter.isEnabled());
     }
 
     @ReactMethod
@@ -152,5 +161,17 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     public void onHostDestroy() {
         mShimmerService.stopService(mShimmerIntent);
         Log.d("[DEBUG]", "Service stopped");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        WritableMap map = Arguments.createMap();
+        if (resultCode == -1) {
+            map.putString("RESULT_CODE", "OK");
+            Log.d("DEBUG", "resolving promise now");
+            this.promise.resolve(map);
+        }
+        map.putString("RESULT_CODE", "CANCEL");
+        this.promise.resolve(map);
     }
 }

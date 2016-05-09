@@ -15,7 +15,7 @@ var splashMixin = {
 
   getInitialState: function() {
     return {
-      progress: 0
+      isBluetoothEnabled: false,
     }
   }
 };
@@ -49,7 +49,18 @@ reactMixin.onClass(Splash, splashMixin);
 
 async function enableBluetooth() {
   try {
-    let enableBluetooth = await ConnectToHardwareModule.enableBluetooth();
+    var {
+      RESULT_CODE
+    } = await ConnectToHardwareModule.enableBluetooth();
+    console.log(RESULT_CODE);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function isBluetoothEnabled() {
+  try {
+    let isBluetoothEnabled = await ConnectToHardwareModule.isBluetoothEnabled();
   } catch (e) {
     console.error(e);
   }
