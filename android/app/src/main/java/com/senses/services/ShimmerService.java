@@ -71,7 +71,6 @@ public class ShimmerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(this, "My Service Created", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onCreate");
     }
 
@@ -103,12 +102,7 @@ public class ShimmerService extends Service {
     }
 
     public boolean connectShimmer(String bluetoothAddress, String selectedDevice) {
-        if (shimmer == null) {
-            Log.d("[DEBUG]", "No shimmer found");
-            return false;
-        }
-
-        if (shimmer.getShimmerState() != Shimmer.STATE_NONE &&
+        if (shimmer != null && shimmer.getShimmerState() != Shimmer.STATE_NONE &&
                 shimmer.getBluetoothAddress().equals(bluetoothAddress)) {
             Log.d("[DEBUG]", "Already connected to a shimmer");
             return true;
