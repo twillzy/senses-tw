@@ -6,6 +6,7 @@ import React, {
 } from 'react-native';
 
 import Splash from './App/Views/splash';
+import Sense from './App/Views/sense';
 
 var _navigator;
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -21,7 +22,11 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
   if (route.name === 'splash') {
     return (
-      <Splash/>
+      <Splash navigator = {navigationOperations} {...route.passProps}/>
+    );
+  } else if (route.name === 'sense') {
+    return (
+      <Sense/>
     );
   } 
 };

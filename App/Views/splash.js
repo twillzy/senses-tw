@@ -3,6 +3,7 @@ import React, {
   Text,
   View,
   StyleSheet,
+  Navigator,
   Image,
 } from 'react-native';
 
@@ -22,6 +23,15 @@ export default class Splash extends Component {
     };
 	}
 
+  _navigate(property) {
+    console.log(property);
+    this.props.navigator.push({
+      name: property,
+      passProps: {
+        name: property
+      }
+    })
+  }
 
   componentDidMount() {
     var self = this;
@@ -32,6 +42,10 @@ export default class Splash extends Component {
         promise.then(function(resultCode) {
            if (resultCode === "OK") {
             self.setState({isBluetoothEnabled: true});
+            self._navigate('sense');
+            // self._navigate(this.props.navigator.push({
+            //   name: 'sense',
+            // }));
            } else if (resultCode === "CANCEL") {
               //TODO message
            }
