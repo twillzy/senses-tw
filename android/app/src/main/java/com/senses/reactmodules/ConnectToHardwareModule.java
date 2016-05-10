@@ -117,40 +117,15 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void isBlueToothEnabled(Promise promise) {
-        promise.resolve(mBluetoothAdapter.isEnabled());
-    }
-
-    @ReactMethod
-    public void startDiscovery(Promise promise) {
+    public void connectToShimmer(Promise promise) {
         try {
-            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-            reactContext.registerReceiver(mReceiver, filter);
-            mBluetoothAdapter.startDiscovery();
-            promise.resolve(true);
+            boolean result = mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("resultCode", result);
+            promise.resolve(map);
         } catch (IllegalViewOperationException e) {
             promise.reject(e);
         }
-    }
-
-    @ReactMethod
-    public void getDevices(Promise promise) {
-        try {
-            WritableArray array = Arguments.createArray();
-            if (mBluetoothAdapter.isDiscovering()) {
-                for (int i = 0; i < mNewDevicesArrayAdapter.size(); i++) {
-                    array.pushString(mNewDevicesArrayAdapter.getString(i));
-                }
-            }
-            promise.resolve(array);
-        } catch (IllegalViewOperationException e) {
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void connectToShimmer() {
-        mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
     }
 
     @Override

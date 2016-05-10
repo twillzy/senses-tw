@@ -5,7 +5,6 @@ import React, {
   BackAndroid,
 } from 'react-native';
 
-import Splash from './App/Views/splash';
 import Sense from './App/Views/sense';
 
 var _navigator;
@@ -24,7 +23,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     return (
       <Sense/>
     );
-  } 
+  }
 };
 
 class senses extends Component {

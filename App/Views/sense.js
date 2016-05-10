@@ -2,6 +2,7 @@ import React, {
   Component,
   Text,
   View,
+  StyleSheet,
 } from 'react-native';
 
 import MK, {
@@ -17,6 +18,7 @@ export default class Sense extends Component {
     this.state = {
       isCurrentlySensing: false,
       isBluetoothEnabled: false,
+      isHardwareConnectedViaBT: false,
     };
   }
 
@@ -29,7 +31,7 @@ export default class Sense extends Component {
         self.setState({isBluetoothEnabled: true});
         ReactSplashScreen.hide();
        } else if (resultCode === "CANCEL") {
-          //TODO message
+          //TODO could not connect to bluetooth, display view here
        }
     }, function(error) {
       console.log(error);
@@ -37,8 +39,9 @@ export default class Sense extends Component {
   }
 
   render() {
-    let text = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
+    let buttonText = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
     let backgroundColor = (this.state.isCurrentlySensing) ? "#58E2C2" : "#4E92DF";
+    let errorText = (this.state.isHardwareConnectedViaBT) ? "" : "Could not find a Shimmer device to connect to.";
 
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: backgroundColor}}>
@@ -50,24 +53,45 @@ export default class Sense extends Component {
           >
           <Text pointerEvents="none"
                 style={{color: '#66E5C8', fontWeight: 'bold',}}>
-            {text}
+            {buttonText}
           </Text>
         </MKButton>
+        <Text style={styles.errorText}>{errorText}</Text>
       </View>
     );
   }
 
   handlePress(event) {
-    ConnectToHardwareModule.connectToShimmer();
 
-    // this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
+    var promise = connectViaBluetooth();
+    promise.then(function(result) {
+      if (result === true) {
+        this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
+      } else {
+        //TODO no shimmer found
+      }
+    }, function(error) {
+      console.error(error);
+    });
   }
 
+}
+
+async function connectViaBluetooth() {
+  try {
+    var {
+      resultCode
+    } = await ConnectToHardwareModule.connectToShimmer();
+    return resultCode;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 
 async function enableBluetooth() {
   try {
+    console.log("Running");
     var {
       resultCode
     } = await ConnectToHardwareModule.enableBluetooth();
@@ -76,3 +100,10 @@ async function enableBluetooth() {
     console.error(e);
   }
 }
+
+var styles = StyleSheet.create({
+  errorText: {
+    color: 'white',
+    marginTop: 5,
+  },
+});
