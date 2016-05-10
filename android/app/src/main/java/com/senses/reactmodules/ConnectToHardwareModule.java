@@ -30,9 +30,16 @@ import java.util.Map;
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
 
     private static final int REQUEST_ENABLE_BT = 1;
+    public static final String VALUE_OK = "OK";
+    private static final String PARAM_RESULT_CODE = "resultCode";
+    public static final String VALUE_CANCEL = "CANCEL";
     final ReactApplicationContext reactContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private WritableArray mNewDevicesArrayAdapter = Arguments.createArray();
+    private ShimmerService mShimmerService;
+    private Intent mShimmerIntent = null;
+    private Promise promise;
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -43,15 +50,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     };
 
-    private ShimmerService mShimmerService;
-    private Intent mShimmerIntent = null;
-    private Promise promise;
-
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mShimmerService = ((ShimmerService.LocalBinder) service).getService();
-            Log.d("[DEBUG]", "============BOUND");
         }
 
         @Override
@@ -98,6 +100,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void enableBluetooth(Promise promise) {
         this.promise = promise;
+        if (mBluetoothAdapter.isEnabled()) {
+            resolvePromiseWithArgument(PARAM_RESULT_CODE, "OK");
+            return;
+        }
         try {
             if(isBlueToothSupported()) {
                 if (!mBluetoothAdapter.isEnabled()) {
@@ -157,6 +163,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     }
 
+    private void resolvePromiseWithArgument(String key, String value) {
+        WritableMap map = Arguments.createMap();
+        map.putString(key, value);
+        this.promise.resolve(map);
+    }
+
     @Override
     public void onHostDestroy() {
         mShimmerService.stopService(mShimmerIntent);
@@ -165,13 +177,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        WritableMap map = Arguments.createMap();
         if (resultCode == Activity.RESULT_OK) {
-            map.putString("resultCode", "OK");
-            this.promise.resolve(map);
+            resolvePromiseWithArgument(PARAM_RESULT_CODE, VALUE_OK);
         } else {
-            map.putString("resultCode", "CANCEL");
-            this.promise.resolve(map);
+            resolvePromiseWithArgument(PARAM_RESULT_CODE, VALUE_CANCEL);
         }
     }
 }

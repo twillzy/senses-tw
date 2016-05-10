@@ -1,7 +1,7 @@
 import React, {
   Component,
   Text,
-  View
+  View,
 } from 'react-native';
 
 import MK, {
@@ -9,13 +9,31 @@ import MK, {
 } from 'react-native-material-kit';
 
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
+import ReactSplashScreen from '@remobile/react-native-splashscreen';
 
 export default class Sense extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isCurrentlySensing: false
+      isCurrentlySensing: false,
+      isBluetoothEnabled: false,
     };
+  }
+
+  componentDidMount() {
+    var self = this;
+    var promise = enableBluetooth();
+    promise.then(function(resultCode) {
+       if (resultCode === "OK") {
+        console.log("OK");
+        self.setState({isBluetoothEnabled: true});
+        ReactSplashScreen.hide();
+       } else if (resultCode === "CANCEL") {
+          //TODO message
+       }
+    }, function(error) {
+      console.log(error);
+    });
   }
 
   render() {
@@ -42,6 +60,19 @@ export default class Sense extends Component {
   handlePress(event) {
     ConnectToHardwareModule.connectToShimmer();
 
-    this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
+    // this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
+  }
+
+}
+
+
+async function enableBluetooth() {
+  try {
+    var {
+      resultCode
+    } = await ConnectToHardwareModule.enableBluetooth();
+    return resultCode;
+  } catch (e) {
+    console.error(e);
   }
 }

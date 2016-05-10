@@ -20,11 +20,7 @@ BackAndroid.addEventListener('hardwareBackPress', () => {
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
-  if (route.name === 'splash') {
-    return (
-      <Splash navigator = {navigationOperations} {...route.passProps}/>
-    );
-  } else if (route.name === 'sense') {
+  if (route.name === 'sense') {
     return (
       <Sense/>
     );
@@ -33,7 +29,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
 
 class senses extends Component {
   render() {
-    var initialRoute = {name: 'splash'};
+    var initialRoute = {name: 'sense'};
 
     return (
 	  <Navigator

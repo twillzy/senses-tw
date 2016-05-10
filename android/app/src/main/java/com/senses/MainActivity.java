@@ -7,6 +7,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.remobile.splashscreen.RCTSplashScreenPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,9 +39,10 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected List<ReactPackage> getPackages() {
-        return Arrays.<ReactPackage>asList(
+        return Arrays.asList(
                 new MainReactPackage(),
                 new ReactMaterialKitPackage(),
+                new RCTSplashScreenPackage(this),
                 new ShimmerReactPackage()
         );
     }
