@@ -18,7 +18,7 @@ export default class Sense extends Component {
     this.state = {
       isCurrentlySensing: false,
       isBluetoothEnabled: false,
-      isHardwareConnectedViaBT: false,
+      isHardwareConnectedViaBT: '',
     };
   }
 
@@ -41,7 +41,7 @@ export default class Sense extends Component {
   render() {
     let buttonText = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
     let backgroundColor = (this.state.isCurrentlySensing) ? "#58E2C2" : "#4E92DF";
-    let errorText = (this.state.isHardwareConnectedViaBT) ? "" : "Could not find a Shimmer device to connect to.";
+    let errorText = (this.state.isHardwareConnectedViaBT === false) ? "Could not find a Shimmer device to connect to." : "";
 
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: backgroundColor}}>
@@ -62,13 +62,12 @@ export default class Sense extends Component {
   }
 
   handlePress(event) {
-
+    var self = this;
     var promise = connectViaBluetooth();
     promise.then(function(result) {
+      self.setState({isHardwareConnectedViaBT: result});
       if (result === true) {
-        this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});
-      } else {
-        //TODO no shimmer found
+        self.setState({isCurrentlySensing: true});
       }
     }, function(error) {
       console.error(error);
@@ -91,7 +90,6 @@ async function connectViaBluetooth() {
 
 async function enableBluetooth() {
   try {
-    console.log("Running");
     var {
       resultCode
     } = await ConnectToHardwareModule.enableBluetooth();
