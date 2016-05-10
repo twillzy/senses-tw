@@ -18,30 +18,6 @@ export default class Sense extends Component {
     };
   }
 
-  componentWillMount() {
-    /*async function enableBluetooth() {
-      try {
-        let enableBluetooth = await ConnectToHardwareModule.enableBluetooth();
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    async function startDiscovery() {
-      try {
-        let prepareForDiscovery = await ConnectToHardwareModule.startDiscovery();
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    enableBluetooth();
-
-    TODO: startDiscovery after enableBluetooth.
-    startDiscovery();
-    */
-  }
-
   render() {
     let text = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
     let backgroundColor = (this.state.isCurrentlySensing) ? "#58E2C2" : "#4E92DF";
@@ -64,18 +40,6 @@ export default class Sense extends Component {
   }
 
   handlePress(event) {
-    /*async function getDevices() {
-      try {
-        let listOfDevices = await ConnectToHardwareModule.getDevices();
-        console.warn(listOfDevices.length);
-        console.warn(listOfDevices[0]);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    getDevices();*/
-
     ConnectToHardwareModule.connectToShimmer();
 
     this.setState({isCurrentlySensing: !this.state.isCurrentlySensing});

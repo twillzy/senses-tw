@@ -1,5 +1,6 @@
 package com.senses.reactmodules;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -165,11 +166,11 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         WritableMap map = Arguments.createMap();
-        if (resultCode == -1) {
-            map.putString("RESULT_CODE", "OK");
+        if (resultCode == Activity.RESULT_OK) {
+            map.putString("resultCode", "OK");
             this.promise.resolve(map);
         } else {
-            map.putString("RESULT_CODE", "CANCEL");
+            map.putString("resultCode", "CANCEL");
             this.promise.resolve(map);
         }
     }

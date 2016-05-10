@@ -12,25 +12,33 @@ import TimerMixin from 'react-timer-mixin';
 
 var splashMixin = {
   mixins: [TimerMixin],
-
-  getInitialState: function() {
-    return {
-      isBluetoothEnabled: false,
-    }
-  }
 };
 
 export default class Splash extends Component {
 	constructor(props) {
 		super(props);
+    this.state = {
+      isBluetoothEnabled: false
+    };
 	}
 
-  static initialState;
 
   componentDidMount() {
+    var self = this;
     this.setTimeout(
       () => {
-        enableBluetooth();
+        var promise = enableBluetooth();
+
+        promise.then(function(resultCode) {
+           if (resultCode === "OK") {
+            self.setState({isBluetoothEnabled: true});
+           } else if (resultCode === "CANCEL") {
+              //TODO message
+           }
+        }, function(error) {
+          console.log(error);
+        });
+
       }, 2000
     );
   }
@@ -50,10 +58,9 @@ reactMixin.onClass(Splash, splashMixin);
 async function enableBluetooth() {
   try {
     var {
-      RESULT_CODE
+      resultCode
     } = await ConnectToHardwareModule.enableBluetooth();
-    
-    console.log(RESULT_CODE);
+    return resultCode;
   } catch (e) {
     console.error(e);
   }
