@@ -12,13 +12,4 @@ public enum ShimmerStatus {
     ShimmerStatus(int value) {
         this.value = value;
     }
-
-    public static ShimmerStatus getStatusByValue(int value) {
-        for (ShimmerStatus shimmerValue : values()) {
-            if (shimmerValue.value == value) {
-                return shimmerValue;
-            }
-        }
-        return DISCONNECTED;
-    }
 }
