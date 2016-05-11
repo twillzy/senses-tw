@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -167,13 +168,11 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         @Override
         public void onReceive(Context context, Intent intent) {
             int shimmerState = intent.getIntExtra("ShimmerState", -1);
-            Log.d("[shimmer]", "Extras: " + intent.getExtras().toString());
+
             switch (shimmerState) {
                 case Shimmer.STATE_CONNECTED:
                     Log.d("Shimmer", "Connected to Shimmer now");
-                    WritableMap map = Arguments.createMap();
-                    map.putBoolean("connectedToShimmer", true);
-                    promise.resolve(map);
+                    Toast.makeText(getReactApplicationContext(), "Connected to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case Shimmer.STATE_CONNECTING:
                     Log.d("Shimmer", "Connecting to Shimmer now");

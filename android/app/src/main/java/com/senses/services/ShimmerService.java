@@ -107,7 +107,7 @@ public class ShimmerService extends Service {
             Log.d("[DEBUG]", "Already connected to a shimmer");
             return;
         }
-        shimmer = new Shimmer(this, mHandler, selectedDevice, false);
+        shimmer = new Shimmer(this, mHandler, selectedDevice, 51.2, 0, 4, Shimmer.SENSOR_GSR, false);
         shimmer.connect(bluetoothAddress, "default");
     }
 
@@ -118,18 +118,6 @@ public class ShimmerService extends Service {
         Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onDestroy");
         shimmer.stop();
-    }
-
-    public void stopStreamingDevice() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            shimmer.stopStreaming();
-        }
-    }
-
-    public void startStreamingDevice() {
-        if (shimmer != null) {
-            shimmer.startStreaming();
-        }
     }
 
     public boolean isLoggingEnabled() {
@@ -298,10 +286,11 @@ public class ShimmerService extends Service {
                     break;
                 case Shimmer.MESSAGE_TOAST:
                     Log.d("toast", msg.getData().getString(Shimmer.TOAST));
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(Shimmer.TOAST), Toast.LENGTH_LONG).show();
 //                    sendBroadcast(intent);
-                    if (msg.getData().getString(Shimmer.TOAST).equals("Device connection was lost")) {
-                        //DEAL WITH LOST CONNECTION TODO
-                    }
+//                    if (msg.getData().getString(Shimmer.TOAST).equals("Device connection was lost")) {
+//                        //DEAL WITH LOST CONNECTION TODO
+//                    }
                     break;
                 case Shimmer.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
