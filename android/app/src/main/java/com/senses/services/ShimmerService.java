@@ -287,11 +287,8 @@ public class ShimmerService extends Service {
                 case Shimmer.MESSAGE_TOAST:
                     Log.d("toast", msg.getData().getString(Shimmer.TOAST));
                     Toast.makeText(getApplicationContext(), msg.getData().getString(Shimmer.TOAST), Toast.LENGTH_LONG).show();
-//                    sendBroadcast(intent);
-//                    if (msg.getData().getString(Shimmer.TOAST).equals("Device connection was lost")) {
-//                        //DEAL WITH LOST CONNECTION TODO
-//                    }
                     break;
+
                 case Shimmer.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case Shimmer.STATE_CONNECTED:
@@ -317,10 +314,12 @@ public class ShimmerService extends Service {
                             intent.putExtra("ShimmerState", Shimmer.STATE_NONE);
                             sendBroadcast(intent);
                             break;
+
+                        case Shimmer.MSG_STATE_FULLY_INITIALIZED:
+                            Log.d("DEBUG", "Defaultttt!");
                     }
 
                     break;
-
                 case Shimmer.MESSAGE_STOP_STREAMING_COMPLETE:
                     String address = msg.getData().getString("Bluetooth Address");
                     boolean stop = msg.getData().getBoolean("Stop Streaming");

@@ -513,8 +513,8 @@ public class Shimmer extends ShimmerBluetooth{
 			mInitialized = true;
 		}
 		mHandler.obtainMessage(Shimmer.MESSAGE_STATE_CHANGE, MSG_STATE_FULLY_INITIALIZED, -1, new ObjectCluster(mMyName,getBluetoothAddress())).sendToTarget();
-		Log.d(mClassName,"Shimmer " + mMyBluetoothAddress +" Initialization completed and is ready for Streaming");
-	}
+        Log.d(mClassName, "Shimmer " + mMyBluetoothAddress + " Initialization completed and is ready for Streaming");
+    }
 
 	protected void isNowStreaming() {
 

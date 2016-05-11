@@ -178,6 +178,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     Log.d("Shimmer", "Connecting to Shimmer now");
                     break;
                 case Shimmer.STATE_NONE:
+                    Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
                     break;
             }
         }
