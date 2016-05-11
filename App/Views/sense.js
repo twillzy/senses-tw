@@ -25,12 +25,12 @@ export default class Sense extends Component {
   componentDidMount() {
     var self = this;
     var promise = enableBluetooth();
-    promise.then(function(resultCode) {
-       if (resultCode === "OK") {
+    promise.then(function(connectedToBluetooth) {
+       if (connectedToBluetooth === "OK") {
         console.log("OK");
         self.setState({isBluetoothEnabled: true});
         ReactSplashScreen.hide();
-       } else if (resultCode === "CANCEL") {
+       } else if (connectedToBluetooth === "CANCEL") {
           //TODO could not connect to bluetooth, display view here
        }
     }, function(error) {
@@ -63,10 +63,11 @@ export default class Sense extends Component {
 
   handlePress(event) {
     var self = this;
-    var promise = connectViaBluetooth();
-    promise.then(function(result) {
-      self.setState({isHardwareConnectedViaBT: result});
-      if (result === true) {
+    var promise = connectToShimmer();
+    promise.then(function(connectedToShimmer) {
+      console.log(connectedToShimmer);
+      self.setState({isHardwareConnectedViaBT: connectedToShimmer});
+      if (connectedToShimmer === true) {
         self.setState({isCurrentlySensing: true});
       }
     }, function(error) {
@@ -76,12 +77,12 @@ export default class Sense extends Component {
 
 }
 
-async function connectViaBluetooth() {
+async function connectToShimmer() {
   try {
     var {
-      resultCode
+      connectedToShimmer
     } = await ConnectToHardwareModule.connectToShimmer();
-    return resultCode;
+    return connectedToShimmer;
   } catch (error) {
     console.error(error);
   }
@@ -91,9 +92,9 @@ async function connectViaBluetooth() {
 async function enableBluetooth() {
   try {
     var {
-      resultCode
+      connectedToBluetooth
     } = await ConnectToHardwareModule.enableBluetooth();
-    return resultCode;
+    return connectedToBluetooth;
   } catch (e) {
     console.error(e);
   }

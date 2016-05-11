@@ -23,23 +23,20 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.ShimmerService;
+import com.shimmerresearch.android.Shimmer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
 
-    private static final int REQUEST_ENABLE_BT = 1;
     public static final String VALUE_OK = "OK";
-    private static final String PARAM_RESULT_CODE = "resultCode";
     public static final String VALUE_CANCEL = "CANCEL";
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
     final ReactApplicationContext reactContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private WritableArray mNewDevicesArrayAdapter = Arguments.createArray();
-    private ShimmerService mShimmerService;
-    private Intent mShimmerIntent = null;
-    private Promise promise;
-
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -49,7 +46,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             }
         }
     };
-
+    private ShimmerService mShimmerService;
+    private Intent mShimmerIntent = null;
+    private Promise promise;
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -71,6 +70,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         this.reactContext.addLifecycleEventListener(this);
         this.reactContext.addActivityEventListener(this);
         doBindService(reactContext);
+        doBindBroadcastReceiver(reactContext);
+    }
+
+    private void doBindBroadcastReceiver(ReactApplicationContext reactContext) {
+        IntentFilter intentFilter = new IntentFilter("com.senses.services.ShimmerService");
+        reactContext.registerReceiver(new ShimmerReceiver(), intentFilter);
     }
 
     public Boolean isBlueToothSupported() {
@@ -119,10 +124,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void connectToShimmer(Promise promise) {
         try {
-            boolean result = mShimmerService.connectShimmer("00:06:06:74:54:B5", "Shimmer3");
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("resultCode", result);
-            promise.resolve(map);
+            mShimmerService.connectShimmer("00:06:66:74:54:B5", "Shimmer3");
         } catch (IllegalViewOperationException e) {
             promise.reject(e);
         }
@@ -130,12 +132,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     @Override
     public void onHostResume() {
-
+        mShimmerService.startService(mShimmerIntent);
     }
 
     @Override
     public void onHostPause() {
-
+        mShimmerService.stopService(mShimmerIntent);
     }
 
     private void resolvePromiseWithArgument(String key, String value) {
@@ -156,6 +158,29 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             resolvePromiseWithArgument(PARAM_RESULT_CODE, VALUE_OK);
         } else {
             resolvePromiseWithArgument(PARAM_RESULT_CODE, VALUE_CANCEL);
+        }
+    }
+
+
+    private class ShimmerReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int shimmerState = intent.getIntExtra("ShimmerState", -1);
+            Log.d("[shimmer]", "Extras: " + intent.getExtras().toString());
+            switch (shimmerState) {
+                case Shimmer.STATE_CONNECTED:
+                    Log.d("Shimmer", "Connected to Shimmer now");
+                    WritableMap map = Arguments.createMap();
+                    map.putBoolean("connectedToShimmer", true);
+                    promise.resolve(map);
+                    break;
+                case Shimmer.STATE_CONNECTING:
+                    Log.d("Shimmer", "Connecting to Shimmer now");
+                    break;
+                case Shimmer.STATE_NONE:
+                    break;
+            }
         }
     }
 }

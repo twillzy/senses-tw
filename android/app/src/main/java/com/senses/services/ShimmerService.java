@@ -101,16 +101,14 @@ public class ShimmerService extends Service {
 
     }
 
-    public boolean connectShimmer(String bluetoothAddress, String selectedDevice) {
+    public void connectShimmer(String bluetoothAddress, String selectedDevice) {
         if (shimmer != null && shimmer.getShimmerState() != Shimmer.STATE_NONE &&
                 shimmer.getBluetoothAddress().equals(bluetoothAddress)) {
             Log.d("[DEBUG]", "Already connected to a shimmer");
-            return true;
+            return;
         }
-
         shimmer = new Shimmer(this, mHandler, selectedDevice, false);
         shimmer.connect(bluetoothAddress, "default");
-        return true;
     }
 
     public void onStop() {
@@ -274,7 +272,6 @@ public class ShimmerService extends Service {
 
     private class ShimmerHandler extends Handler { //TODO make static
         private final WeakReference<ShimmerService> shimmerService;
-        private String mLogFileName = "Default";
 
         public ShimmerHandler(ShimmerService service) {
             shimmerService = new WeakReference<>(service);
@@ -282,7 +279,10 @@ public class ShimmerService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
+            Intent intent = new Intent("com.senses.services.ShimmerService");
+
             switch (msg.what) { // handlers have a what identifier which is used to identify the type of msg
+
                 case Shimmer.MESSAGE_READ:
                     if ((msg.obj instanceof ObjectCluster)) {    // within each msg an object can be include, objectclusters are used to represent the data structure of the shimmer device
                         ObjectCluster objectCluster = (ObjectCluster) msg.obj;
@@ -298,27 +298,30 @@ public class ShimmerService extends Service {
                     break;
                 case Shimmer.MESSAGE_TOAST:
                     Log.d("toast", msg.getData().getString(Shimmer.TOAST));
+//                    sendBroadcast(intent);
                     if (msg.getData().getString(Shimmer.TOAST).equals("Device connection was lost")) {
                         //DEAL WITH LOST CONNECTION TODO
                     }
                     break;
                 case Shimmer.MESSAGE_STATE_CHANGE:
-                    Intent intent = new Intent("com.senses.services.ShimmerService");
                     switch (msg.arg1) {
                         case Shimmer.STATE_CONNECTED:
                             Log.d("Shimmer", ((ObjectCluster) msg.obj).mBluetoothAddress + "  " + ((ObjectCluster) msg.obj).mMyName);
-
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
                             intent.putExtra("ShimmerState", Shimmer.STATE_CONNECTED);
+                            Log.d("Shimmer", "Connected!");
                             sendBroadcast(intent);
-
                             break;
+
                         case Shimmer.STATE_CONNECTING:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
                             intent.putExtra("ShimmerState", Shimmer.STATE_CONNECTING);
+                            Log.d("Shimmer", "Connecting!");
+                            sendBroadcast(intent);
                             break;
+
                         case Shimmer.STATE_NONE:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
@@ -338,6 +341,7 @@ public class ShimmerService extends Service {
                     break;
             }
         }
+
     }
 
 }
