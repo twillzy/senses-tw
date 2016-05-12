@@ -107,7 +107,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     public void enableBluetooth(Promise promise) {
         this.promise = promise;
         if (mBluetoothAdapter.isEnabled()) {
-            resolvePromiseWithArgument(PARAM_RESULT_CODE, "OK");
+            resolvePromiseWithArgument(PARAM_RESULT_CODE, VALUE_OK);
             return;
         }
         try {
@@ -124,6 +124,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void connectToShimmer(Promise promise) {
+        this.promise = promise;
         try {
             mShimmerService.connectShimmer("00:06:66:74:54:B5", "Shimmer3");
         } catch (IllegalViewOperationException e) {
@@ -180,7 +181,8 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case READY_TO_STREAM:
-                    mShimmerService.startStreaming();
+                    mShimmerService.startStreamingGSRData();
+                    resolvePromiseWithArgument("streamingOn", "OK");
                     break;
             }
         }

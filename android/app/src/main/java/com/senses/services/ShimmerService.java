@@ -102,11 +102,6 @@ public class ShimmerService extends Service {
     }
 
     public void connectShimmer(String bluetoothAddress, String selectedDevice) {
-        if (shimmer != null && shimmer.getShimmerState() != Shimmer.STATE_NONE &&
-                shimmer.getBluetoothAddress().equals(bluetoothAddress)) {
-            Log.d("[DEBUG]", "Already connected to a shimmer");
-            return;
-        }
         shimmer = new Shimmer(this, mHandler, selectedDevice, 51.2, 0, 4, Shimmer.SENSOR_GSR, false);
         shimmer.connect(bluetoothAddress, "default");
     }
@@ -148,33 +143,32 @@ public class ShimmerService extends Service {
         }
     }
 
-    public double getSamplingRate(String bluetoothAddress) {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED &&
-                shimmer.getBluetoothAddress().equals(bluetoothAddress)) {
+    public double getSamplingRate() {
+        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
             return shimmer.getSamplingRate();
         }
         return -1D;
     }
 
-    public int getAccelRange(String bluetoothAddress) {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED &&
-                shimmer.getBluetoothAddress().equals(bluetoothAddress)) {
+    public int getAccelRange() {
+        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
             return shimmer.getAccelRange();
         }
         return -1;
     }
 
-    public int getShimmerState(String bluetoothAddress) {
+    public int getShimmerState() {
         int status = -1;
-        if (shimmer.getBluetoothAddress().equals(bluetoothAddress)) {
+        if (shimmer != null) {
             status = shimmer.getShimmerState();
             Log.d("ShimmerState", Integer.toString(status));
         }
         return status;
     }
 
-    public void startStreaming() {
+    public void startStreamingGSRData() {
         if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
+            Log.d("Shimmer", "Enabled sensors: " + shimmer.getListofEnabledSensors());
             shimmer.startStreaming();
         }
     }
@@ -217,7 +211,7 @@ public class ShimmerService extends Service {
         return deviceStreaming;
     }
 
-    public void closeAndRemoveFile(String bluetoothAddress) {
+    public void closeAndRemoveFile() {
         if (mEnableLogging) {
             shimmerLog.closeFile();
         }
@@ -260,7 +254,6 @@ public class ShimmerService extends Service {
 
     private class ShimmerHandler extends Handler { //TODO make static
         private final WeakReference<ShimmerService> shimmerService;
-
         public ShimmerHandler(ShimmerService service) {
             shimmerService = new WeakReference<>(service);
         }
@@ -284,6 +277,7 @@ public class ShimmerService extends Service {
                         }
                     }
                     break;
+
                 case Shimmer.MESSAGE_TOAST:
                     Log.d("toast", msg.getData().getString(Shimmer.TOAST));
                     Toast.makeText(getApplicationContext(), msg.getData().getString(Shimmer.TOAST), Toast.LENGTH_LONG).show();
@@ -327,7 +321,7 @@ public class ShimmerService extends Service {
                     String address = msg.getData().getString("Bluetooth Address");
                     boolean stop = msg.getData().getBoolean("Stop Streaming");
                     if (stop) {
-                        closeAndRemoveFile(address);
+                        closeAndRemoveFile();
                     }
                     break;
             }

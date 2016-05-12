@@ -41,7 +41,6 @@ export default class Sense extends Component {
   render() {
     let buttonText = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
     let backgroundColor = (this.state.isCurrentlySensing) ? "#58E2C2" : "#4E92DF";
-    let errorText = (this.state.isHardwareConnectedViaBT === false) ? "Could not find a Shimmer device to connect to." : "";
 
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: backgroundColor}}>
@@ -56,7 +55,6 @@ export default class Sense extends Component {
             {buttonText}
           </Text>
         </MKButton>
-        <Text style={styles.errorText}>{errorText}</Text>
       </View>
     );
   }
@@ -65,7 +63,7 @@ export default class Sense extends Component {
     var self = this;
     var promise = connectToShimmer();
     promise.then(function(connectedToShimmer) {
-      console.log(connectedToShimmer);
+      console.warn(connectedToShimmer + " STREAMING IS NOW ON!");
       self.setState({isHardwareConnectedViaBT: connectedToShimmer});
       if (connectedToShimmer === true) {
         self.setState({isCurrentlySensing: true});
@@ -80,9 +78,9 @@ export default class Sense extends Component {
 async function connectToShimmer() {
   try {
     var {
-      connectedToShimmer
+      streamingOn
     } = await ConnectToHardwareModule.connectToShimmer();
-    return connectedToShimmer;
+    return streamingOn;
   } catch (error) {
     console.error(error);
   }
@@ -101,8 +99,5 @@ async function enableBluetooth() {
 }
 
 var styles = StyleSheet.create({
-  errorText: {
-    color: 'white',
-    marginTop: 5,
-  },
+
 });
