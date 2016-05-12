@@ -21,8 +21,9 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
   if (route.name === 'connecting') {
     return (
-      <Connect/>
+      <Connect navigator={navigationOperations}/>
     );
+  } else if (route.name === 'sensing') {
   }
 };
 

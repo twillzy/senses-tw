@@ -38,9 +38,16 @@ export default class Connect extends Component {
     });
   }
 
+  _navigate(property){
+    console.log("Pushing");
+    this.props.navigator.push({
+      name: property,
+    });
+  }
+
   render() {
-    let buttonText = (this.state.isCurrentlySensing) ? "STOP SENSING" : "START SENSING";
-    let backgroundColor = (this.state.isCurrentlySensing) ? "#58E2C2" : "#4E92DF";
+    let buttonText = "START SENSING";
+    let backgroundColor = "#4E92DF";
 
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: backgroundColor}}>
@@ -62,11 +69,12 @@ export default class Connect extends Component {
   handlePress(event) {
     var self = this;
     var promise = connectToShimmer();
-    promise.then(function(connectedToShimmer) {
-      console.warn(connectedToShimmer + " STREAMING IS NOW ON!");
-      self.setState({isHardwareConnectedViaBT: connectedToShimmer});
-      if (connectedToShimmer === true) {
+    promise.then(function(streamingOn) {
+      console.log("streamingOn: " + streamingOn);
+      self.setState({isHardwareConnectedViaBT: streamingOn});
+      if (streamingOn === "OK") {
         self.setState({isCurrentlySensing: true});
+        self._navigate('sensing');
       }
     }, function(error) {
       console.error(error);
@@ -85,7 +93,6 @@ async function connectToShimmer() {
     console.error(error);
   }
 }
-
 
 async function enableBluetooth() {
   try {
