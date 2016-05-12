@@ -2,7 +2,6 @@ import React, {
   Component,
   Text,
   View,
-  StyleSheet,
 } from 'react-native';
 
 import MK, {
@@ -11,6 +10,7 @@ import MK, {
 
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
+import GlobalStyles from './../../App/Styles/globalStyles';
 
 export default class Connect extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ export default class Connect extends Component {
     let buttonText = "START SENSING";
 
     return (
-      <View style={styles.container}>
+      <View style={GlobalStyles.container}>
         <MKButton
           backgroundColor="white"
           borderRadius={4}
@@ -102,12 +102,3 @@ async function enableBluetooth() {
     console.error(e);
   }
 }
-
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: "#4E92DF"
-  }
-});

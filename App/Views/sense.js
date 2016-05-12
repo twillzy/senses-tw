@@ -2,10 +2,21 @@ import React, {
   Component,
   Text,
   View,
-  StyleSheet,
 } from 'react-native';
 
+import MK, {
+  MKButton,
+  MKSpinner,
+} from 'react-native-material-kit';
+
+import GlobalStyles from './../../App/Styles/globalStyles';
+
 export default class Sense extends Component {
+
+  // var SingleColorSpinner = MKSpinner.singleColorSpinner()
+  // .withStyle(GlobalStyles.spinner)
+  // .build();
+
   constructor(props) {
     super(props);
   }
@@ -18,18 +29,13 @@ export default class Sense extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Hello!</Text>
+      <View style={GlobalStyles.container}>
+        <MKSpinner
+          style={GlobalStyles.spinner}
+          strokeColor='white'/>
+
+        <Text>Sensing...</Text>
       </View>
     );
   }
 }
-
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: "#4E92DF"
-  }
-});
