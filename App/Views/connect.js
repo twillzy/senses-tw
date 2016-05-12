@@ -12,7 +12,7 @@ import MK, {
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
 
-export default class Sense extends Component {
+export default class Connect extends Component {
   constructor(props) {
     super(props);
     this.state = {

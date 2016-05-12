@@ -5,7 +5,7 @@ import React, {
   BackAndroid,
 } from 'react-native';
 
-import Sense from './App/Views/sense';
+import Connect from './App/Views/connect';
 
 var _navigator;
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -19,16 +19,16 @@ BackAndroid.addEventListener('hardwareBackPress', () => {
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
-  if (route.name === 'sense') {
+  if (route.name === 'connecting') {
     return (
-      <Sense/>
+      <Connect/>
     );
   }
 };
 
 class senses extends Component {
   render() {
-    var initialRoute = {name: 'sense'};
+    var initialRoute = {name: 'connecting'};
 
     return (
 	  <Navigator
