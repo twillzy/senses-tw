@@ -6,6 +6,7 @@ import React, {
 } from 'react-native';
 
 import Connect from './App/Views/connect';
+import Sense from './App/Views/sense';
 
 var _navigator;
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -24,6 +25,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
       <Connect navigator={navigationOperations}/>
     );
   } else if (route.name === 'sensing') {
+    return <Sense navigator={navigationOperations}/>
   }
 };
 

@@ -39,7 +39,6 @@ export default class Connect extends Component {
   }
 
   _navigate(property){
-    console.log("Pushing");
     this.props.navigator.push({
       name: property,
     });
@@ -47,10 +46,9 @@ export default class Connect extends Component {
 
   render() {
     let buttonText = "START SENSING";
-    let backgroundColor = "#4E92DF";
 
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: backgroundColor}}>
+      <View style={styles.container}>
         <MKButton
           backgroundColor="white"
           borderRadius={4}
@@ -106,5 +104,10 @@ async function enableBluetooth() {
 }
 
 var styles = StyleSheet.create({
-
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "#4E92DF"
+  }
 });
