@@ -83,10 +83,6 @@ public class ShimmerService extends Service {
         super.onDestroy();
     }
 
-    public void disconnectAllDevices() {
-        shimmer.stop();
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("LocalService", "Received start id " + startId + ": " + intent);
@@ -213,7 +209,7 @@ public class ShimmerService extends Service {
         return deviceStreaming;
     }
 
-    public void closeAndRemoveFile() {
+    public void stopWritingToLog() {
         if (mEnableLogging) {
             shimmerLog.closeFile();
             try {

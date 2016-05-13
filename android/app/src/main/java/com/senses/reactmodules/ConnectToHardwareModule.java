@@ -188,7 +188,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
-                    mShimmerService.closeAndRemoveFile();
+                    mShimmerService.stopWritingToLog();
             }
         }
     }
