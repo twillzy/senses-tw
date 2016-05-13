@@ -15,6 +15,9 @@ export default class Sense extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      buttonHasBeenPressed: false,
+    };
   }
 
   _navigate(property){
@@ -34,6 +37,8 @@ export default class Sense extends Component {
           backgroundColor="white"
           borderRadius={4}
           padding={15}
+          disabled={this.state.buttonHasBeenPressed}
+          onPress={this.handlePress.bind(this)}
           >
           <Text pointerEvents="none"
                 style={{color: '#66E5C8', fontWeight: 'bold',}}>
@@ -43,4 +48,11 @@ export default class Sense extends Component {
       </View>
     );
   }
+
+  handlePress(event) {
+    var self = this;
+    self.setState({buttonHasBeenPressed: true});
+    self._navigate('view-results');
+  }
+
 }

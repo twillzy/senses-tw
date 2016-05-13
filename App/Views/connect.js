@@ -18,7 +18,7 @@ export default class Connect extends Component {
     this.state = {
       isCurrentlySensing: false,
       isBluetoothEnabled: false,
-      isHardwareConnectedViaBT: '',
+      buttonHasBeenPressed: false,
     };
   }
 
@@ -53,6 +53,7 @@ export default class Connect extends Component {
           backgroundColor="white"
           borderRadius={4}
           padding={15}
+          disabled={this.state.buttonHasBeenPressed}
           onPress={this.handlePress.bind(this)}
           >
           <Text pointerEvents="none"
@@ -67,9 +68,9 @@ export default class Connect extends Component {
   handlePress(event) {
     var self = this;
     var promise = connectToShimmer();
+    self.setState({buttonHasBeenPressed: true})
     promise.then(function(streamingOn) {
       console.log("streamingOn: " + streamingOn);
-      self.setState({isHardwareConnectedViaBT: streamingOn});
       if (streamingOn === "OK") {
         self.setState({isCurrentlySensing: true});
         self._navigate('sensing');

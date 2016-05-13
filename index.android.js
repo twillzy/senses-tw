@@ -26,6 +26,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     );
   } else if (route.name === 'sensing') {
     return <Sense navigator={navigationOperations}/>
+  } else {
+    return <View/>
   }
 };
 
