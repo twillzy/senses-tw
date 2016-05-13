@@ -52,7 +52,7 @@ export default class Sense extends Component {
   handlePress(event) {
     var self = this;
     self.setState({buttonHasBeenPressed: true});
-    self._navigate('view-results');
+    self._navigate('results');
   }
 
 }
