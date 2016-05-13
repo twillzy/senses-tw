@@ -17,5 +17,11 @@ module.exports = StyleSheet.create({
   whiteText: {
     color: 'white',
     marginBottom: 20,
+  },
+  blueText: {
+    color: '#66E5C8',
+  },
+  boldText: {
+    fontWeight: 'bold',
   }
 });

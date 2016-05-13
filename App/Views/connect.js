@@ -57,7 +57,7 @@ export default class Connect extends Component {
           onPress={this.handlePress.bind(this)}
           >
           <Text pointerEvents="none"
-                style={{color: '#66E5C8', fontWeight: 'bold',}}>
+                style={[GlobalStyles.blueText, GlobalStyles.boldText]}>
             {buttonText}
           </Text>
         </MKButton>
