@@ -12,5 +12,10 @@ module.exports = StyleSheet.create({
   spinner: {
     height: 200,
     width: 200,
+    marginBottom: 20,
+  },
+  whiteText: {
+    color: 'white',
+    marginBottom: 20,
   }
 });

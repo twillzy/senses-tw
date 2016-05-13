@@ -13,10 +13,6 @@ import GlobalStyles from './../../App/Styles/globalStyles';
 
 export default class Sense extends Component {
 
-  // var SingleColorSpinner = MKSpinner.singleColorSpinner()
-  // .withStyle(GlobalStyles.spinner)
-  // .build();
-
   constructor(props) {
     super(props);
   }
@@ -33,8 +29,17 @@ export default class Sense extends Component {
         <MKSpinner
           style={GlobalStyles.spinner}
           strokeColor='white'/>
-
-        <Text>Sensing...</Text>
+        <Text style={GlobalStyles.whiteText}>Sensing...</Text>
+        <MKButton
+          backgroundColor="white"
+          borderRadius={4}
+          padding={15}
+          >
+          <Text pointerEvents="none"
+                style={{color: '#66E5C8', fontWeight: 'bold',}}>
+            STOP SENSING
+          </Text>
+        </MKButton>
       </View>
     );
   }
