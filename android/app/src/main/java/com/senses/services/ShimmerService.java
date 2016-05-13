@@ -289,7 +289,7 @@ public class ShimmerService extends Service {
                             Log.d("Shimmer", ((ObjectCluster) msg.obj).mBluetoothAddress + "  " + ((ObjectCluster) msg.obj).mMyName);
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", ShimmerStatus.CONNECTED);
+                            intent.putExtra("ShimmerState", DeviceStatus.CONNECTED);
                             Log.d("Shimmer", "Connected!");
                             sendBroadcast(intent);
                             break;
@@ -297,7 +297,7 @@ public class ShimmerService extends Service {
                         case Shimmer.STATE_CONNECTING:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", ShimmerStatus.CONNECTING);
+                            intent.putExtra("ShimmerState", DeviceStatus.CONNECTING);
                             Log.d("Shimmer", "Connecting!");
                             sendBroadcast(intent);
                             break;
@@ -305,14 +305,14 @@ public class ShimmerService extends Service {
                         case Shimmer.STATE_NONE:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", ShimmerStatus.DISCONNECTED);
+                            intent.putExtra("ShimmerState", DeviceStatus.DISCONNECTED);
                             sendBroadcast(intent);
                             break;
 
                         case Shimmer.MSG_STATE_FULLY_INITIALIZED:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", ShimmerStatus.READY_TO_STREAM);
+                            intent.putExtra("ShimmerState", DeviceStatus.READY_TO_STREAM);
                             sendBroadcast(intent);
                     }
 
@@ -323,6 +323,7 @@ public class ShimmerService extends Service {
                     if (stop) {
                         closeAndRemoveFile();
                     }
+                    Log.d("[SHIMMER]", "Log done ");
                     break;
             }
         }

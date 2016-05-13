@@ -1,6 +1,6 @@
 package com.senses.services;
 
-public enum ShimmerStatus {
+public enum DeviceStatus {
     DISCONNECTED,
     CONNECTING,
     CONNECTED,

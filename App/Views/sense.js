@@ -10,6 +10,7 @@ import MK, {
 } from 'react-native-material-kit';
 
 import GlobalStyles from './../../App/Styles/globalStyles';
+import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 
 export default class Sense extends Component {
 
@@ -52,7 +53,18 @@ export default class Sense extends Component {
   handlePress(event) {
     var self = this;
     self.setState({buttonHasBeenPressed: true});
+    stopStreaming();
     self._navigate('results');
   }
 
+}
+
+async function stopStreaming() {
+  try {
+    var {
+
+    } = await ConnectToHardwareModule.stopShimmerStreaming();
+  } catch (error) {
+    console.error(error);
+  }
 }

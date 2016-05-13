@@ -23,8 +23,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.senses.services.DeviceStatus;
 import com.senses.services.ShimmerService;
-import com.senses.services.ShimmerStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         reactContext.registerReceiver(new ShimmerReceiver(), intentFilter);
     }
 
-    public Boolean isBlueToothSupported() {
+    private boolean isBlueToothSupported() {
         if (mBluetoothAdapter == null) {
             return false;
         }
@@ -132,6 +132,17 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     }
 
+    @ReactMethod
+    public void stopShimmerStreaming(Promise promise) {
+        this.promise = promise;
+        try {
+            mShimmerService.stopStreaming();
+            Log.d("SHIMMER", "Stop Streaming");
+        } catch (IllegalViewOperationException e) {
+            promise.reject(e);
+        }
+    }
+
     @Override
     public void onHostResume() {
         mShimmerService.startService(mShimmerIntent);
@@ -143,6 +154,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     private void resolvePromiseWithArgument(String key, String value) {
+        if (this.promise == null) {
+            return;
+        }
         WritableMap map = Arguments.createMap();
         map.putString(key, value);
         this.promise.resolve(map);
@@ -168,7 +182,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            ShimmerStatus status = (ShimmerStatus) intent.getSerializableExtra("ShimmerState");
+            DeviceStatus status = (DeviceStatus) intent.getSerializableExtra("ShimmerState");
             switch (status) {
                 case CONNECTED:
                     Log.d("Shimmer", "Connected to Shimmer now");
@@ -181,6 +195,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case READY_TO_STREAM:
+                    mShimmerService.setEnableLogging(true);
                     mShimmerService.startStreamingGSRData();
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
