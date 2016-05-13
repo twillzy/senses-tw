@@ -26,8 +26,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.DeviceStatus;
 import com.senses.services.ShimmerService;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
 
@@ -199,6 +201,16 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     mShimmerService.startStreamingGSRData();
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
+                case STREAMING_STOPPED:
+                    mShimmerService.closeAndRemoveFile();
+                    try {
+                        Scanner sc = new Scanner(mShimmerService.getShimmerLog().getOutputFile());
+                        while (sc.hasNextLine()) {
+                            Log.d("SHIMMERLOGFILE", sc.nextLine());
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
             }
         }
     }

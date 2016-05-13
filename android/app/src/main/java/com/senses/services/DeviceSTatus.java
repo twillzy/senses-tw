@@ -5,5 +5,6 @@ public enum DeviceStatus {
     CONNECTING,
     CONNECTED,
     READY_TO_STREAM,
-    STREAMING;
+    STREAMING,
+    STREAMING_STOPPED;
 }

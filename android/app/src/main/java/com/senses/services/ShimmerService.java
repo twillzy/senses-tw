@@ -270,6 +270,7 @@ public class ShimmerService extends Service {
                         if (shimmerService.get().isLoggingEnabled()) {
                             if (shimmerService.get().getShimmerLog() != null) {
                                 shimmerService.get().logData(objectCluster);
+
                             } else {
                                 char[] bA = objectCluster.mBluetoothAddress.toCharArray();
                                 shimmerService.get().setShimmerLog(new Logging(Long.toString(System.currentTimeMillis()) + " Device" + bA[12] + bA[13] + bA[15] + bA[16], "\t"));
@@ -314,17 +315,15 @@ public class ShimmerService extends Service {
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
                             intent.putExtra("ShimmerState", DeviceStatus.READY_TO_STREAM);
                             sendBroadcast(intent);
+                            break;
+
+                        case Shimmer.MSG_STATE_STOP_STREAMING:
+                            intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
+                            intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
+                            intent.putExtra("ShimmerState", DeviceStatus.STREAMING_STOPPED);
+                            sendBroadcast(intent);
                     }
 
-                    break;
-                case Shimmer.MESSAGE_STOP_STREAMING_COMPLETE:
-                    String address = msg.getData().getString("Bluetooth Address");
-                    boolean stop = msg.getData().getBoolean("Stop Streaming");
-                    if (stop) {
-                        closeAndRemoveFile();
-                    }
-                    Log.d("[SHIMMER]", "Log done ");
-                    break;
             }
         }
 
