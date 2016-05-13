@@ -52,8 +52,10 @@ import com.shimmerresearch.android.Shimmer;
 import com.shimmerresearch.driver.ObjectCluster;
 import com.shimmerresearch.tools.Logging;
 
+import java.io.FileNotFoundException;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Scanner;
 
 public class ShimmerService extends Service {
     private static final String TAG = "ShimmerService";
@@ -214,6 +216,14 @@ public class ShimmerService extends Service {
     public void closeAndRemoveFile() {
         if (mEnableLogging) {
             shimmerLog.closeFile();
+            try {
+                Scanner sc = new Scanner(shimmerLog.getOutputFile());
+                while (sc.hasNextLine()) {
+                    Log.d("SHIMMERLOGFILE", sc.nextLine());
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

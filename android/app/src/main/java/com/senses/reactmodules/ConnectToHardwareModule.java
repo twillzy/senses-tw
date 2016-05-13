@@ -2,7 +2,6 @@ package com.senses.reactmodules;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,16 +19,13 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.DeviceStatus;
 import com.senses.services.ShimmerService;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
 
@@ -39,19 +35,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
     final ReactApplicationContext reactContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    private WritableArray mNewDevicesArrayAdapter = Arguments.createArray();
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                mNewDevicesArrayAdapter.pushString(device.getName() + "\n" + device.getAddress());
-            }
-        }
-    };
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
     private Promise promise;
+
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -88,7 +75,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         return true;
     }
 
-    public void doBindService(ReactApplicationContext reactContext) {
+    private void doBindService(ReactApplicationContext reactContext) {
         mShimmerIntent = new Intent(reactContext, ShimmerService.class);
         reactContext.bindService(mShimmerIntent, mShimmerConnection, Context.BIND_AUTO_CREATE);
         reactContext.startService(mShimmerIntent);
@@ -187,7 +174,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             DeviceStatus status = (DeviceStatus) intent.getSerializableExtra("ShimmerState");
             switch (status) {
                 case CONNECTED:
-                    Log.d("Shimmer", "Connected to Shimmer now");
                     Toast.makeText(getReactApplicationContext(), "Connected to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case CONNECTING:
@@ -203,14 +189,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     break;
                 case STREAMING_STOPPED:
                     mShimmerService.closeAndRemoveFile();
-                    try {
-                        Scanner sc = new Scanner(mShimmerService.getShimmerLog().getOutputFile());
-                        while (sc.hasNextLine()) {
-                            Log.d("SHIMMERLOGFILE", sc.nextLine());
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
             }
         }
     }
