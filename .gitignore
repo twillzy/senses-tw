@@ -21,6 +21,8 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+*.iml
+android/*.iml
 
 # Android/IJ
 #
@@ -36,5 +38,4 @@ npm-debug.log
 # BUCK
 buck-out/
 \.buckd/
-android/app/libs
 android/keystores/debug.keystore
