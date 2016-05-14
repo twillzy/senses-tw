@@ -2,6 +2,7 @@ import React, {
   Component,
   Text,
   View,
+  Image,
 } from 'react-native';
 
 import MK, {
@@ -30,9 +31,9 @@ export default class Sense extends Component {
   render() {
     return (
       <View style={GlobalStyles.container}>
-        <MKSpinner
+        <Image
           style={GlobalStyles.spinner}
-          strokeColor='white'/>
+          source={require('./../Assets/images/loading.gif')}/>
         <Text style={GlobalStyles.whiteText}>Sensing...</Text>
         <MKButton
           backgroundColor="white"
@@ -56,7 +57,6 @@ export default class Sense extends Component {
     stopStreaming();
     self._navigate('results');
   }
-
 }
 
 async function stopStreaming() {
