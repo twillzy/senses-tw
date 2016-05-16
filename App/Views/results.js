@@ -3,9 +3,12 @@ import React, {
   Text,
   Animated,
   View,
+  StyleSheet,
+  Easing,
 } from 'react-native';
 
 import GlobalStyles from './../../App/Styles/globalStyles';
+import ReactSplashScreen from '@remobile/react-native-splashscreen';
 
 export default class Results extends Component {
 
@@ -16,33 +19,55 @@ export default class Results extends Component {
     }
   }
 
-  handleAnimation(nextValue) {
-    this.timing = Animated.timing;
-
-    Animated.timing(
-           this.state.gsr,
-           {toValue: nextValue}
-         ).start();
+  componentWillMount() {
+    ReactSplashScreen.hide();
   }
 
+  componentDidMount() {
+    this.updateGSRandRedraw();
+  }
+
+  updateGSRandRedraw() {
+    var timing = Animated.timing;
+
+    Animated.sequence([
+              timing(this.state.gsr, {
+                toValue: 100,
+                easing: Easing.linear,
+              }),
+              Animated.delay(200),
+              timing(this.state.gsr, {
+                toValue: 150,
+                easing: Easing.linear,
+              }),
+              Animated.delay(200),
+              timing(this.state.gsr, {
+                toValue: 80,
+                easing: Easing.linear,
+              }),
+              Animated.delay(200),
+              timing(this.state.gsr, {
+                toValue: 200,
+                easing: Easing.linear,
+              }),
+              Animated.delay(1000),
+            ]).start();
+  }
 
   render () {
     return (
       <View style={GlobalStyles.container}>
-        <Animated.View style={[styles.bar, {height: this.state.height}]}>
+        <Animated.View style={[styles.bar, {height: this.state.gsr}]}>
         </Animated.View>
       </View>
-     )
+    );
   }
 
-  var styles = StyleSheet.create({
-    bar: {
-      marginTop: 300,
-      borderRadius: 5,
-      backgroundColor: '#F55443',
-      width: 300,
-      position: 'absolute',
-    }
-  });
-
 }
+
+var styles = StyleSheet.create({
+  bar: {
+    backgroundColor: '#66E5C8',
+    width: 100,
+  }
+});
