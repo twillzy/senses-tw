@@ -25,7 +25,7 @@ export default class Results extends Component {
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
-       console.warn(gsrValues);
+      gsrValues.push(0);
        self.setState({fetchedGsrValues: gsrValues});
        self.animateGSR();
     }, function(error) {

@@ -190,7 +190,7 @@ public class ShimmerService extends Service {
         }
         CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
         List<String[]> logEntries = reader.readAll();
-        for (int i = 20; i < logEntries.size(); i += 10) {
+        for (int i = 20; i < logEntries.size(); i += 20) {
             Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(i)[0]
                     .split("\t")[0]));
             gsrValues.add(gsrValue);

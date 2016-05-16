@@ -72,10 +72,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     private boolean isBlueToothSupported() {
-        if (mBluetoothAdapter == null) {
-            return false;
-        }
-        return true;
+        return mBluetoothAdapter != null;
     }
 
     private void doBindService(ReactApplicationContext reactContext) {
