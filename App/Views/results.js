@@ -9,6 +9,7 @@ import React, {
 
 import GlobalStyles from './../../App/Styles/globalStyles';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
+import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 
 export default class Results extends Component {
 
@@ -16,27 +17,30 @@ export default class Results extends Component {
     super(props);
     this.state = {
       gsr: new Animated.Value(0),
-    }
-  }
-
-  componentWillMount() {
-    ReactSplashScreen.hide();
+      fetchedGsrValues: [],
+    };
   }
 
   componentDidMount() {
-    this.updateGSRandRedraw();
+    var promise = getGSRValues();
+    var self = this;
+    promise.then(function(gsrValues) {
+       console.warn(gsrValues);
+       self.setState({fetchedGsrValues: gsrValues});
+       self.animateGSR();
+    }, function(error) {
+      console.log(error);
+    });
   }
 
-  updateGSRandRedraw() {
+  animateGSR() {
     var timing = Animated.timing;
-    var gsrValues = [100, 150, 80, 150, 200, 300, 400, 20, 35, 67, 100, 120, 69,
-            150, 60, 200, 230, 450, 200, 99];
     var timingSequence = [];
     var self = this;
-    gsrValues.forEach((value) => timingSequence.push(
+    self.state.fetchedGsrValues.forEach((value) => timingSequence.push(
       timing(self.state.gsr,
         {
-          toValue: value,
+          toValue: value % 500,
           easing: Easing.ease,
         })));
 
@@ -52,6 +56,17 @@ export default class Results extends Component {
     );
   }
 
+}
+
+async function getGSRValues() {
+  try {
+    var {
+      gsrVals
+    } = await ConnectToHardwareModule.getGSRData();
+    return gsrVals;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 var styles = StyleSheet.create({

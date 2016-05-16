@@ -136,6 +136,7 @@ dependencies {
     // From node_modules
     compile project(':RNMaterialKit')
     compile project(':react-native-splashscreen')
+    compile group: 'net.sf.opencsv', name: 'opencsv', version: '2.3'
 }
 
 // Run this once to be able to run the application with BUCK

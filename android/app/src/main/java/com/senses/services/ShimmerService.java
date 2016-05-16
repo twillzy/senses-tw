@@ -52,10 +52,13 @@ import com.shimmerresearch.android.Shimmer;
 import com.shimmerresearch.driver.ObjectCluster;
 import com.shimmerresearch.tools.Logging;
 
-import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 public class ShimmerService extends Service {
     private static final String TAG = "ShimmerService";
@@ -141,43 +144,11 @@ public class ShimmerService extends Service {
         }
     }
 
-    public double getSamplingRate() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            return shimmer.getSamplingRate();
-        }
-        return -1D;
-    }
-
-    public int getAccelRange() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            return shimmer.getAccelRange();
-        }
-        return -1;
-    }
-
-    public int getShimmerState() {
-        int status = -1;
-        if (shimmer != null) {
-            status = shimmer.getShimmerState();
-            Log.d("ShimmerState", Integer.toString(status));
-        }
-        return status;
-    }
-
     public void startStreamingGSRData() {
         if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
             Log.d("Shimmer", "Enabled sensors: " + shimmer.getListofEnabledSensors());
             shimmer.startStreaming();
         }
-    }
-
-    public List<String> getListofEnabledSensors() {
-        List<String> listofSensors = null;
-
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            listofSensors = shimmer.getListofEnabledSensors();
-        }
-        return listofSensors;
     }
 
     public void stopStreaming() {
@@ -193,49 +164,14 @@ public class ShimmerService extends Service {
         }
     }
 
-    public boolean isDeviceConnected() {
-        boolean deviceConnected = false;
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            deviceConnected = true;
-        }
-        return deviceConnected;
-    }
-
-    public boolean deviceIsStreaming() {
-        boolean deviceStreaming = false;
-        if (shimmer != null && shimmer.getStreamingStatus()) {
-            deviceStreaming = true;
-        }
-        return deviceStreaming;
-    }
-
-    public void stopWritingToLog() {
+    public void stopWritingToLog() throws IOException {
         if (mEnableLogging) {
+//            localShimmerLog = shimmerLog.getOutputFile();
             shimmerLog.closeFile();
-            try {
-                Scanner sc = new Scanner(shimmerLog.getOutputFile());
-                while (sc.hasNextLine()) {
-                    Log.d("SHIMMERLOGFILE", sc.nextLine());
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
         }
     }
 
-    public int getShimmerVersion() {
-        int version = 0;
-        if (shimmer != null) {
-            version = shimmer.getShimmerVersion();
-        }
-        return version;
-    }
-
-    public Shimmer getShimmer() {
-        return shimmer;
-    }
-
-    public Logging getShimmerLog() {
+    private Logging getShimmerLog() {
         return shimmerLog;
     }
 
@@ -243,12 +179,23 @@ public class ShimmerService extends Service {
         this.shimmerLog = logging;
     }
 
-    public void test() {
-        Log.d("ShimmerTest", "Test");
-    }
-
     private void logData(ObjectCluster objectCluster) {
         shimmerLog.logData(objectCluster);
+    }
+
+    public List<Integer> getGSRDataFromFile() throws IOException {
+        List<Integer> gsrValues = new ArrayList<>();
+        if (shimmerLog.getOutputFile() == null) {
+            return gsrValues;
+        }
+        CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
+        List<String[]> logEntries = reader.readAll();
+        for (int i = 20; i < logEntries.size(); i += 10) {
+            Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(i)[0]
+                    .split("\t")[0]));
+            gsrValues.add(gsrValue);
+        }
+        return gsrValues;
     }
 
     public class LocalBinder extends Binder {

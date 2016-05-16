@@ -19,12 +19,15 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.DeviceStatus;
 import com.senses.services.ShimmerService;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
@@ -132,6 +135,25 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     }
 
+    @ReactMethod
+    public void getGSRData(Promise promise) {
+        this.promise = promise;
+        try {
+            List<Integer> gsrValues = mShimmerService.getGSRDataFromFile();
+            WritableArray gsrVals = Arguments.createArray();
+            for (Integer gsrValue : gsrValues) {
+                gsrVals.pushInt(gsrValue);
+            }
+            WritableMap map = Arguments.createMap();
+            map.putArray("gsrVals", gsrVals);
+            promise.resolve(map);
+        } catch (IllegalViewOperationException e) {
+            promise.reject(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onHostResume() {
         mShimmerService.startService(mShimmerIntent);
@@ -188,7 +210,11 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
-                    mShimmerService.stopWritingToLog();
+                    try {
+                        mShimmerService.stopWritingToLog();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
             }
         }
     }
