@@ -21,8 +21,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.senses.services.DeviceStatus;
 import com.senses.services.ShimmerService;
-import com.senses.services.StreamStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -171,7 +171,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            StreamStatus status = (StreamStatus) intent.getSerializableExtra("ShimmerState");
+            DeviceStatus status = (DeviceStatus) intent.getSerializableExtra("ShimmerState");
             switch (status) {
                 case CONNECTED:
                     Toast.makeText(getReactApplicationContext(), "Connected to Shimmer", Toast.LENGTH_LONG).show();

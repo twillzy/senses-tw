@@ -1,6 +1,6 @@
 package com.senses.services;
 
-public enum StreamStatus {
+public enum DeviceStatus {
     DISCONNECTED,
     CONNECTING,
     CONNECTED,

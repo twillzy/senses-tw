@@ -296,7 +296,7 @@ public class ShimmerService extends Service {
                             Log.d("Shimmer", ((ObjectCluster) msg.obj).mBluetoothAddress + "  " + ((ObjectCluster) msg.obj).mMyName);
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", StreamStatus.CONNECTED);
+                            intent.putExtra("ShimmerState", DeviceStatus.CONNECTED);
                             Log.d("Shimmer", "Connected!");
                             sendBroadcast(intent);
                             break;
@@ -304,7 +304,7 @@ public class ShimmerService extends Service {
                         case Shimmer.STATE_CONNECTING:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", StreamStatus.CONNECTING);
+                            intent.putExtra("ShimmerState", DeviceStatus.CONNECTING);
                             Log.d("Shimmer", "Connecting!");
                             sendBroadcast(intent);
                             break;
@@ -312,21 +312,21 @@ public class ShimmerService extends Service {
                         case Shimmer.STATE_NONE:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", StreamStatus.DISCONNECTED);
+                            intent.putExtra("ShimmerState", DeviceStatus.DISCONNECTED);
                             sendBroadcast(intent);
                             break;
 
                         case Shimmer.MSG_STATE_FULLY_INITIALIZED:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", StreamStatus.READY_TO_STREAM);
+                            intent.putExtra("ShimmerState", DeviceStatus.READY_TO_STREAM);
                             sendBroadcast(intent);
                             break;
 
                         case Shimmer.MSG_STATE_STOP_STREAMING:
                             intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
                             intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", StreamStatus.STREAMING_STOPPED);
+                            intent.putExtra("ShimmerState", DeviceStatus.STREAMING_STOPPED);
                             sendBroadcast(intent);
                     }
 
