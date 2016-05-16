@@ -29,29 +29,18 @@ export default class Results extends Component {
 
   updateGSRandRedraw() {
     var timing = Animated.timing;
+    var gsrValues = [100, 150, 80, 150, 200, 300, 400, 20, 35, 67, 100, 120, 69,
+            150, 60, 200, 230, 450, 200, 99];
+    var timingSequence = [];
+    var self = this;
+    gsrValues.forEach((value) => timingSequence.push(
+      timing(self.state.gsr,
+        {
+          toValue: value,
+          easing: Easing.ease,
+        })));
 
-    Animated.sequence([
-              timing(this.state.gsr, {
-                toValue: 100,
-                easing: Easing.linear,
-              }),
-              Animated.delay(200),
-              timing(this.state.gsr, {
-                toValue: 150,
-                easing: Easing.linear,
-              }),
-              Animated.delay(200),
-              timing(this.state.gsr, {
-                toValue: 80,
-                easing: Easing.linear,
-              }),
-              Animated.delay(200),
-              timing(this.state.gsr, {
-                toValue: 200,
-                easing: Easing.linear,
-              }),
-              Animated.delay(1000),
-            ]).start();
+    Animated.sequence(timingSequence).start();
   }
 
   render () {
@@ -68,6 +57,6 @@ export default class Results extends Component {
 var styles = StyleSheet.create({
   bar: {
     backgroundColor: '#66E5C8',
-    width: 100,
+    width: 200,
   }
 });
