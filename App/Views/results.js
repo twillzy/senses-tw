@@ -50,11 +50,13 @@ export default class Results extends Component {
     //   450, 23, 45, 0];
     // this.setState({fetchedGsrValues: dummyValues});
     console.log(this.state.fetchedGsrValues);
+    var min = Math.min(...self.state.fetchedGsrValues);
+    var max = Math.max(...self.state.fetchedGsrValues);
     self.state.fetchedGsrValues.forEach((value) => {
       timingSequence.push(
       timing(self.state.gsr,
         {
-          toValue: value % 350,
+          toValue: ((value - min) / (max - min)) * 305,
           easing: Easing.ease,
         }));
       });
