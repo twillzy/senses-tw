@@ -3,6 +3,7 @@ import React, {
   Text,
   Animated,
   View,
+  Image,
   StyleSheet,
   Easing,
 } from 'react-native';
@@ -47,12 +48,12 @@ export default class Results extends Component {
     //   40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60,
     //   450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450,
     //   450, 23, 45, 0];
-    // self.setState({fetchedGsrValues: dummyValues});
-    console.log(self.state.fetchedGsrValues);
+    // this.setState({fetchedGsrValues: dummyValues});
+    console.log(this.state.fetchedGsrValues);
     self.state.fetchedGsrValues.forEach((value) => timingSequence.push(
       timing(self.state.gsr,
         {
-          toValue: value % 500,
+          toValue: value % 400,
           easing: Easing.ease,
         })));
 
@@ -64,6 +65,9 @@ export default class Results extends Component {
       <View style={GlobalStyles.container}>
         <Animated.View style={[styles.bar, {height: this.state.gsr}]}>
         </Animated.View>
+        <Image
+          style={styles.head}
+          source={require('./../Assets/images/head.png')}/>
       </View>
     );
   }
@@ -84,8 +88,14 @@ async function getGSRValues() {
 var styles = StyleSheet.create({
   bar: {
     backgroundColor: '#66E5C8',
-    width: 1000,
+    width: 250,
     position: 'absolute',
-    bottom: 0,
-  }
+    bottom: 100,
+    left: 50,
+  },
+  head: {
+    height: 500,
+    width: 300,
+    alignSelf: 'center',
+  },
 });

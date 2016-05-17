@@ -106,6 +106,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     public void getGSRData(Promise promise) {
         this.promise = promise;
         try {
+            if (mShimmerService == null) {
+                return;
+            }
             List<Integer> gsrValues = mShimmerService.getGSRDataFromFile();
             WritableArray gsrVals = Arguments.createArray();
             for (Integer gsrValue : gsrValues) {

@@ -31,9 +31,7 @@ export default class Sense extends Component {
   render() {
     return (
       <View style={GlobalStyles.container}>
-        <Image
-          style={GlobalStyles.spinner}
-          source={require('./../Assets/images/loading.gif')}/>
+        <Image source={require('./../Assets/images/loading.gif')}/>
         <Text style={GlobalStyles.whiteText}>Sensing...</Text>
         <MKButton
           backgroundColor="white"

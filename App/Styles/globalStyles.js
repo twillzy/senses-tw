@@ -9,11 +9,6 @@ module.exports = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: "#4E92DF"
   },
-  spinner: {
-    height: 200,
-    width: 200,
-    marginBottom: 20,
-  },
   whiteText: {
     color: 'white',
     marginBottom: 20,
