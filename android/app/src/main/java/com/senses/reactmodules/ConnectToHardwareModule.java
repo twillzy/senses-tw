@@ -41,7 +41,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
     private Promise promise;
-
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -50,10 +49,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            mShimmerService.stopService(mShimmerIntent);
-            mShimmerService = null;
-            Log.d("[DEBUG]", "Stopped Shimmer Service");
-
+            doUnbindService();
         }
     };
 
@@ -62,34 +58,8 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
         this.reactContext.addActivityEventListener(this);
-        doBindService(reactContext);
-        doBindBroadcastReceiver(reactContext);
-    }
-
-    private void doBindBroadcastReceiver(ReactApplicationContext reactContext) {
-        IntentFilter intentFilter = new IntentFilter("com.senses.services.ShimmerService");
-        reactContext.registerReceiver(new ShimmerReceiver(), intentFilter);
-    }
-
-    private boolean isBlueToothSupported() {
-        return mBluetoothAdapter != null;
-    }
-
-    private void doBindService(ReactApplicationContext reactContext) {
-        mShimmerIntent = new Intent(reactContext, ShimmerService.class);
-        reactContext.bindService(mShimmerIntent, mShimmerConnection, Context.BIND_AUTO_CREATE);
-        reactContext.startService(mShimmerIntent);
-    }
-
-    @Override
-    public String getName() {
-        return "ConnectToHardwareModule";
-    }
-
-    @Override
-    public Map<String, Object> getConstants() {
-        final Map<String, Object> constants = new HashMap<>();
-        return constants;
+        doBindService();
+        doBindBroadcastReceiver();
     }
 
     @ReactMethod
@@ -100,7 +70,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             return;
         }
         try {
-            if(isBlueToothSupported()) {
+            if (isBlueToothSupported()) {
                 if (!mBluetoothAdapter.isEnabled()) {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     reactContext.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT, null);
@@ -152,28 +122,33 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     @Override
+    public String getName() {
+        return "ConnectToHardwareModule";
+    }
+
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+        return constants;
+    }
+
+    @Override
     public void onHostResume() {
-        mShimmerService.startService(mShimmerIntent);
+        doBindService();
+        Log.d("PAUSE", "Restarting service now");
+
     }
 
     @Override
     public void onHostPause() {
-        mShimmerService.stopService(mShimmerIntent);
-    }
-
-    private void resolvePromiseWithArgument(String key, String value) {
-        if (this.promise == null) {
-            return;
-        }
-        WritableMap map = Arguments.createMap();
-        map.putString(key, value);
-        this.promise.resolve(map);
+        Log.d("PAUSE", "Stopping service now");
+        doUnbindService();
     }
 
     @Override
     public void onHostDestroy() {
-        mShimmerService.stopService(mShimmerIntent);
-        Log.d("[DEBUG]", "Service stopped");
+        doUnbindService();
+        Log.d("PAUSE", "Service stopped");
     }
 
     @Override
@@ -185,6 +160,34 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     }
 
+    private boolean isBlueToothSupported() {
+        return mBluetoothAdapter != null;
+    }
+
+    private void doBindService() {
+        mShimmerIntent = new Intent(getReactApplicationContext(), ShimmerService.class);
+        reactContext.bindService(mShimmerIntent, mShimmerConnection, Context.BIND_AUTO_CREATE);
+        reactContext.startService(mShimmerIntent);
+    }
+
+    private void doUnbindService() {
+        mShimmerService.disconnectShimmer();
+        mShimmerService.stopService(mShimmerIntent);
+    }
+
+    private void doBindBroadcastReceiver() {
+        IntentFilter intentFilter = new IntentFilter("com.senses.services.ShimmerService");
+        reactContext.registerReceiver(new ShimmerReceiver(), intentFilter);
+    }
+
+    private void resolvePromiseWithArgument(String key, String value) {
+        if (this.promise == null) {
+            return;
+        }
+        WritableMap map = Arguments.createMap();
+        map.putString(key, value);
+        this.promise.resolve(map);
+    }
 
     private class ShimmerReceiver extends BroadcastReceiver {
 
