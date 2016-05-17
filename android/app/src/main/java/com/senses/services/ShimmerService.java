@@ -83,6 +83,7 @@ public class ShimmerService extends Service {
     public void onDestroy() {
         Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onDestroy");
+        disconnectShimmer();
         super.onDestroy();
     }
 
