@@ -22,21 +22,32 @@ export default class Results extends Component {
   }
 
   componentDidMount() {
+    ReactSplashScreen.hide();
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
       gsrValues.push(0);
        self.setState({fetchedGsrValues: gsrValues});
-       self.animateGSR();
+       self.animateGSRValues();
     }, function(error) {
       console.log(error);
     });
   }
 
-  animateGSR() {
+  animateGSRValues() {
     var timing = Animated.timing;
     var timingSequence = [];
     var self = this;
+    //for testing
+    // var dummyValues = [340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450, 450,
+    //   23, 45, 340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450, 450, 23, 45,
+    //   340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500,
+    //   300, 200, 250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200,
+    //   250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100,
+    //   40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60,
+    //   450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450,
+    //   450, 23, 45, 0];
+    // self.setState({fetchedGsrValues: dummyValues});
     self.state.fetchedGsrValues.forEach((value) => timingSequence.push(
       timing(self.state.gsr,
         {
@@ -72,6 +83,8 @@ async function getGSRValues() {
 var styles = StyleSheet.create({
   bar: {
     backgroundColor: '#66E5C8',
-    width: 200,
+    width: 1000,
+    position: 'absolute',
+    bottom: 0,
   }
 });

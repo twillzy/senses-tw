@@ -14,9 +14,7 @@ var _navigator;
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
   if (route.name === 'connecting') {
-    return (
-      <Connect navigator={navigationOperations}/>
-    );
+    return <Connect navigator={navigationOperations}/>
   } else if (route.name === 'sensing') {
     return <Sense navigator={navigationOperations}/>
   } else if (route.name === 'results') {
