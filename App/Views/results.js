@@ -48,6 +48,7 @@ export default class Results extends Component {
     //   450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450,
     //   450, 23, 45, 0];
     // self.setState({fetchedGsrValues: dummyValues});
+    console.log(self.state.fetchedGsrValues);
     self.state.fetchedGsrValues.forEach((value) => timingSequence.push(
       timing(self.state.gsr,
         {

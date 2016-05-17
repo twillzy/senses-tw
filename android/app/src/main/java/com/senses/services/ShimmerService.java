@@ -81,8 +81,6 @@ public class ShimmerService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
-        Log.d(TAG, "onDestroy");
         Log.d("PAUSE", "onDestroy");
         disconnectShimmer();
         super.onDestroy();
@@ -109,15 +107,6 @@ public class ShimmerService extends Service {
         shimmer.connect(bluetoothAddress, "default");
     }
 
-    public void onStop() {
-        if (shimmer == null) {
-            return;
-        }
-        Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
-        Log.d(TAG, "onDestroy");
-        shimmer.stop();
-    }
-
     public boolean isLoggingEnabled() {
         return mEnableLogging;
     }
@@ -127,41 +116,22 @@ public class ShimmerService extends Service {
         Log.d("Shimmer", "Logging :" + Boolean.toString(mEnableLogging));
     }
 
-    public long getEnabledSensors() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            return shimmer.getEnabledSensors();
-        }
-        return 0L;
-    }
-
-    public void setEnabledSensors(long enabledSensors) {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            shimmer.writeEnabledSensors(enabledSensors);
-        }
-    }
-
-    public void writeGSRRange(int gsrRange) {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
-            shimmer.writeGSRRange(gsrRange);
-        }
-    }
-
     public void startStreamingGSRData() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
+        if (isShimmerConnected()) {
             Log.d("Shimmer", "Enabled sensors: " + shimmer.getListofEnabledSensors());
             shimmer.startStreaming();
         }
     }
 
     public void stopStreaming() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
+        if (isShimmerConnected()) {
             shimmer.stopStreaming();
         }
     }
 
 
     public void disconnectShimmer() {
-        if (shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED) {
+        if (isShimmerConnected()) {
             shimmer.stop();
         }
     }
@@ -170,6 +140,10 @@ public class ShimmerService extends Service {
         if (mEnableLogging) {
             shimmerLog.closeFile();
         }
+    }
+
+    private boolean isShimmerConnected() {
+        return shimmer != null && shimmer.getShimmerState() == Shimmer.STATE_CONNECTED;
     }
 
     private Logging getShimmerLog() {
@@ -214,7 +188,6 @@ public class ShimmerService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
-            Intent intent = new Intent("com.senses.services.ShimmerService");
 
             switch (msg.what) { // handlers have a what identifier which is used to identify the type of msg
 
@@ -241,46 +214,36 @@ public class ShimmerService extends Service {
                 case Shimmer.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case Shimmer.STATE_CONNECTED:
-                            Log.d("Shimmer", ((ObjectCluster) msg.obj).mBluetoothAddress + "  " + ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
-                            intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", DeviceStatus.CONNECTED);
-                            Log.d("Shimmer", "Connected!");
-                            sendBroadcast(intent);
+                            createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.CONNECTED);
                             break;
 
                         case Shimmer.STATE_CONNECTING:
-                            intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
-                            intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", DeviceStatus.CONNECTING);
-                            Log.d("Shimmer", "Connecting!");
-                            sendBroadcast(intent);
+                            createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.CONNECTING);
                             break;
 
                         case Shimmer.STATE_NONE:
-                            intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
-                            intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", DeviceStatus.DISCONNECTED);
-                            sendBroadcast(intent);
+                            createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.DISCONNECTED);
                             break;
 
                         case Shimmer.MSG_STATE_FULLY_INITIALIZED:
-                            intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
-                            intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", DeviceStatus.READY_TO_STREAM);
-                            sendBroadcast(intent);
+                            createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.READY_TO_STREAM);
                             break;
 
                         case Shimmer.MSG_STATE_STOP_STREAMING:
-                            intent.putExtra("ShimmerBluetoothAddress", ((ObjectCluster) msg.obj).mBluetoothAddress);
-                            intent.putExtra("ShimmerDeviceName", ((ObjectCluster) msg.obj).mMyName);
-                            intent.putExtra("ShimmerState", DeviceStatus.STREAMING_STOPPED);
-                            sendBroadcast(intent);
+                            createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.STREAMING_STOPPED);
+                            break;
                     }
 
             }
         }
 
+        private void createAndBroadcastIntent(ObjectCluster objectCluster, DeviceStatus status) {
+            Intent intent = new Intent("com.senses.services.ShimmerService");
+            Log.d("Shimmer", objectCluster.mBluetoothAddress + "  " + objectCluster.mMyName);
+            intent.putExtra("ShimmerBluetoothAddress", objectCluster.mBluetoothAddress);
+            intent.putExtra("ShimmerDeviceName", objectCluster.mMyName);
+            intent.putExtra("ShimmerState", status);
+            sendBroadcast(intent);
+        }
     }
-
 }
