@@ -61,6 +61,7 @@ import java.util.List;
 import au.com.bytecode.opencsv.CSVReader;
 
 public class ShimmerService extends Service {
+    public static final int GRANULARITY = 10;
     private static final String TAG = "ShimmerService";
     public final Handler mHandler = new ShimmerHandler(this);
     private final IBinder mBinder = new LocalBinder();
@@ -160,15 +161,20 @@ public class ShimmerService extends Service {
 
     public List<Integer> getGSRDataFromFile() throws IOException {
         List<Integer> gsrValues = new ArrayList<>();
-        if (shimmerLog.getOutputFile() == null) {
+        if (shimmerLog == null || shimmerLog.getOutputFile() == null) {
             return gsrValues;
         }
         CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
         List<String[]> logEntries = reader.readAll();
-        for (int i = 20; i < logEntries.size(); i += 20) {
-            Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(i)[0]
-                    .split("\t")[0]));
-            gsrValues.add(gsrValue);
+        for (int i = GRANULARITY; i < logEntries.size() - GRANULARITY; i += GRANULARITY) {
+            int averageGsrValue = 0;
+            for (int j = i; j < i + GRANULARITY; j++) {
+                Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(j)[0]
+                        .split("\t")[0]));
+                averageGsrValue += gsrValue;
+            }
+            averageGsrValue /= GRANULARITY;
+            gsrValues.add(averageGsrValue);
         }
         return gsrValues;
     }

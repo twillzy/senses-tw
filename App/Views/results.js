@@ -50,12 +50,14 @@ export default class Results extends Component {
     //   450, 23, 45, 0];
     // this.setState({fetchedGsrValues: dummyValues});
     console.log(this.state.fetchedGsrValues);
-    self.state.fetchedGsrValues.forEach((value) => timingSequence.push(
+    self.state.fetchedGsrValues.forEach((value) => {
+      timingSequence.push(
       timing(self.state.gsr,
         {
-          toValue: value % 400,
+          toValue: value % 350,
           easing: Easing.ease,
-        })));
+        }));
+      });
 
     Animated.sequence(timingSequence).start();
   }
@@ -90,7 +92,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#66E5C8',
     width: 250,
     position: 'absolute',
-    bottom: 100,
+    bottom: 180,
     left: 50,
   },
   head: {
