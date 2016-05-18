@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,7 +28,6 @@ import com.senses.services.ShimmerService;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ConnectToHardwareModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
@@ -109,13 +109,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             if (mShimmerService == null) {
                 return;
             }
-            List<Integer> gsrValues = mShimmerService.getGSRDataFromFile();
-            WritableArray gsrVals = Arguments.createArray();
-            for (Integer gsrValue : gsrValues) {
-                gsrVals.pushInt(gsrValue);
-            }
+            Bundle[] timeOffsetGsrValues = mShimmerService.getGSRDataAndTimeOffsetsFromFile();
+            WritableArray arrayOfGSRValues = Arguments.fromArray(timeOffsetGsrValues);
             WritableMap map = Arguments.createMap();
-            map.putArray("gsrVals", gsrVals);
+            map.putArray("gsrVals", arrayOfGSRValues);
             promise.resolve(map);
         } catch (IllegalViewOperationException e) {
             promise.reject(e);

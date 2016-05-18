@@ -8,6 +8,10 @@ import React, {
   Easing,
 } from 'react-native';
 
+import MK, {
+  MKSlider,
+} from 'react-native-material-kit';
+
 import GlobalStyles from './../../App/Styles/globalStyles';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
@@ -22,16 +26,21 @@ export default class Results extends Component {
     };
   }
 
-  componentDidMount() {
-    ReactSplashScreen.hide();
+  componentWillMount() {
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
        self.setState({fetchedGsrValues: gsrValues});
-       self.animateGSRValues();
+       console.warn(self.state.fetchedGsrValues);
+      //  self.animateGSRValues();
     }, function(error) {
       console.log(error);
     });
+  }
+
+  componentDidMount() {
+    ReactSplashScreen.hide();
+    let timelineSlider = this.refs.timelineSlider;
   }
 
   animateGSRValues() {
@@ -52,6 +61,7 @@ export default class Results extends Component {
     var max = Math.max(...self.state.fetchedGsrValues);
     var offset = 180;
     var scaling = 135;
+    console.log(self.state.fetchedGsrValues);
     self.state.fetchedGsrValues.forEach((value) => {
       timingSequence.push(
       timing(self.state.gsr,
@@ -72,6 +82,13 @@ export default class Results extends Component {
         <Image
           style={styles.head}
           source={require('./../Assets/images/head.png')}/>
+          <MKSlider
+              ref="timelineSlider"
+              min={0}
+              max={1000}
+              value={0}
+              style={styles.slider}
+              lowerTrackColor='#FFFFFF'/>
       </View>
     );
   }
@@ -102,4 +119,7 @@ var styles = StyleSheet.create({
     width: 300,
     alignSelf: 'center',
   },
+  slider: {
+    width: 300,
+  }
 });

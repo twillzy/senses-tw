@@ -42,6 +42,7 @@ package com.senses.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -159,24 +160,31 @@ public class ShimmerService extends Service {
         shimmerLog.logData(objectCluster);
     }
 
-    public List<Integer> getGSRDataFromFile() throws IOException {
-        List<Integer> gsrValues = new ArrayList<>();
+    public Bundle[] getGSRDataAndTimeOffsetsFromFile() throws IOException {
+        List<Bundle> timeOffsetGsrValuePairs = new ArrayList<>();
         if (shimmerLog == null || shimmerLog.getOutputFile() == null) {
-            return gsrValues;
+            return null;
         }
         CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
         List<String[]> logEntries = reader.readAll();
         for (int i = GRANULARITY; i < logEntries.size() - GRANULARITY; i += GRANULARITY) {
-            int averageGsrValue = 0;
+            int averageGSRValue = 0;
             for (int j = i; j < i + GRANULARITY; j++) {
                 Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(j)[0]
                         .split("\t")[0]));
-                averageGsrValue += gsrValue;
+                averageGSRValue += gsrValue;
             }
-            averageGsrValue /= GRANULARITY;
-            gsrValues.add(averageGsrValue);
+            Integer timeOffset = Math.round(Float.parseFloat(logEntries.get(i)[0]
+                    .split("\t")[2]));
+            averageGSRValue /= GRANULARITY;
+
+            Bundle timeOffsetGSRPair = new Bundle();
+            timeOffsetGSRPair.putInt("timeOffset", timeOffset);
+            timeOffsetGSRPair.putInt("averageGSRValue", averageGSRValue);
+            timeOffsetGsrValuePairs.add(timeOffsetGSRPair);
         }
-        return gsrValues;
+        Bundle[] bundleArray = new Bundle[timeOffsetGsrValuePairs.size()];
+        return timeOffsetGsrValuePairs.toArray(bundleArray);
     }
 
     public class LocalBinder extends Binder {
