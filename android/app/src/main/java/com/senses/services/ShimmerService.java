@@ -160,7 +160,7 @@ public class ShimmerService extends Service {
         shimmerLog.logData(objectCluster);
     }
 
-    public Bundle[] getGSRDataAndTimeOffsetsFromFile() throws IOException {
+    public Bundle[] getTimeOffsetsAndGSRValuePairs() throws IOException {
         List<Bundle> timeOffsetGsrValuePairs = new ArrayList<>();
         if (shimmerLog == null || shimmerLog.getOutputFile() == null) {
             return null;
@@ -170,12 +170,10 @@ public class ShimmerService extends Service {
         for (int i = GRANULARITY; i < logEntries.size() - GRANULARITY; i += GRANULARITY) {
             int averageGSRValue = 0;
             for (int j = i; j < i + GRANULARITY; j++) {
-                Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(j)[0]
-                        .split("\t")[0]));
+                Integer gsrValue = getIntegerValueFromColumn(0, logEntries.get(j)[0]);
                 averageGSRValue += gsrValue;
             }
-            Integer timeOffset = Math.round(Float.parseFloat(logEntries.get(i)[0]
-                    .split("\t")[2]));
+            Integer timeOffset = getIntegerValueFromColumn(2, logEntries.get(i)[0]);
             averageGSRValue /= GRANULARITY;
 
             Bundle timeOffsetGSRPair = new Bundle();
@@ -185,6 +183,10 @@ public class ShimmerService extends Service {
         }
         Bundle[] bundleArray = new Bundle[timeOffsetGsrValuePairs.size()];
         return timeOffsetGsrValuePairs.toArray(bundleArray);
+    }
+
+    private Integer getIntegerValueFromColumn(int columnNumber, String csvRow) {
+        return Math.round(Float.parseFloat(csvRow.split("\t")[columnNumber]));
     }
 
     public class LocalBinder extends Binder {

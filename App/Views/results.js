@@ -31,8 +31,6 @@ export default class Results extends Component {
     var self = this;
     promise.then(function(gsrValues) {
        self.setState({fetchedGsrValues: gsrValues});
-       console.warn(self.state.fetchedGsrValues);
-      //  self.animateGSRValues();
     }, function(error) {
       console.log(error);
     });
@@ -61,7 +59,6 @@ export default class Results extends Component {
     var max = Math.max(...self.state.fetchedGsrValues);
     var offset = 180;
     var scaling = 135;
-    console.log(self.state.fetchedGsrValues);
     self.state.fetchedGsrValues.forEach((value) => {
       timingSequence.push(
       timing(self.state.gsr,
@@ -75,6 +72,7 @@ export default class Results extends Component {
   }
 
   render () {
+    
     return (
       <View style={GlobalStyles.container}>
         <Animated.View style={[styles.bar, {height: this.state.gsr}]}>
@@ -84,11 +82,12 @@ export default class Results extends Component {
           source={require('./../Assets/images/head.png')}/>
           <MKSlider
               ref="timelineSlider"
-              min={0}
-              max={1000}
+              min={this.state.fetchedGsrValues[0].timeOffset}
+              max={this.state.fetchedGsrValues[this.state.fetchedGsrValues.length - 1].timeOffset}
               value={0}
               style={styles.slider}
-              lowerTrackColor='#FFFFFF'/>
+              lowerTrackColor='#FFFFFF'
+              onChange={(curValue) => {console.warn(curValue)}}/>
       </View>
     );
   }

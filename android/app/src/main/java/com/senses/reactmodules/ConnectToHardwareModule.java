@@ -109,7 +109,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             if (mShimmerService == null) {
                 return;
             }
-            Bundle[] timeOffsetGsrValues = mShimmerService.getGSRDataAndTimeOffsetsFromFile();
+            Bundle[] timeOffsetGsrValues = mShimmerService.getTimeOffsetsAndGSRValuePairs();
             WritableArray arrayOfGSRValues = Arguments.fromArray(timeOffsetGsrValues);
             WritableMap map = Arguments.createMap();
             map.putArray("gsrVals", arrayOfGSRValues);
