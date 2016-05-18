@@ -27,7 +27,6 @@ export default class Results extends Component {
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
-      gsrValues.push(0);
        self.setState({fetchedGsrValues: gsrValues});
        self.animateGSRValues();
     }, function(error) {
@@ -47,16 +46,17 @@ export default class Results extends Component {
     //   250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100,
     //   40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60,
     //   450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450,
-    //   450, 23, 45, 0];
-    // this.setState({fetchedGsrValues: dummyValues});
-    console.log(this.state.fetchedGsrValues);
+    //   450, 23, 45];
+    // self.setState({fetchedGsrValues: dummyValues});
     var min = Math.min(...self.state.fetchedGsrValues);
     var max = Math.max(...self.state.fetchedGsrValues);
+    var offset = 180;
+    var scaling = 135;
     self.state.fetchedGsrValues.forEach((value) => {
       timingSequence.push(
       timing(self.state.gsr,
         {
-          toValue: ((value - min) / (max - min)) * 305,
+          toValue: (((value - min) / (max - min)) * scaling) + offset,
           easing: Easing.ease,
         }));
       });
