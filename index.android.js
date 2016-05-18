@@ -36,4 +36,4 @@ class senses extends Component {
   }
 }
 
-AppRegistry.registerComponent('senses', () => senses);
+AppRegistry.registerComponent('senseS', () => senses);
