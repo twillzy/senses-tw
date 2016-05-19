@@ -35,9 +35,21 @@ export default class Results extends Component {
     // this.setState({fetchedGsrValues: this.dummyValues});
     promise.then(function(gsrValues) {
        self.setState({fetchedGsrValues: gsrValues});
-       console.warn(self.state.fetchedGsrValues);
        self.setState({minTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[0])});
-       self.setState({maxTimeOffset: Object.keys(self.state.fetchedGsrValues)[self.state.fetchedGsrValues.length - 1]});
+       self.setState({maxTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[Object.keys(self.state.fetchedGsrValues).length - 1])});
+       self.setState({minGSRValue: Math.min(...Object.values(self.state.fetchedGsrValues))});
+       self.setState({maxGSRValue: Math.max(...Object.values(self.state.fetchedGsrValues))});
+
+       console.log("===============");
+       console.log(self.state.fetchedGsrValues);
+       console.log(self.state.minTimeOffset);
+       console.log(self.state.maxTimeOffset);
+       console.log(self.state.maxGSRValue);
+       console.log(self.state.minGSRValue);
+
+       self.setState({scaling: 135});
+       self.setState({offset: 180});
+
        let timelineSlider = self.refs.timelineSlider;
     }, function(error) {
       console.log(error);
@@ -52,21 +64,32 @@ export default class Results extends Component {
     var timing = Animated.timing;
     var timingSequence = [];
     var self = this;
-    var min = Math.min(...self.state.fetchedGsrValues);
-    var max = Math.max(...self.state.fetchedGsrValues);
 
-    var offset = 180;
-    var scaling = 135;
     self.state.fetchedGsrValues.forEach((value) => {
       timingSequence.push(
       timing(self.state.gsr,
         {
-          toValue: (((value - min) / (max - min)) * scaling) + offset,
+          toValue: (((value - self.state.minGSRValue) /
+                  (self.state.maxGSRValue - self.state.minGSRValue))
+                  * self.state.scaling)
+                  + self.state.offset,
           easing: Easing.ease,
         }));
       });
 
     Animated.sequence(timingSequence).start();
+  }
+
+  displayVisual(newValueInDecimals) {
+    var bestFitGSR = this.roundDownToNearestGSRValue(newValueInDecimals); //TODO
+    Animated.timing(this.state.gsr,
+    {
+      toValue: (((bestFitGSR - this.state.minGSRValue) /
+              (this.state.maxGSRValue - this.state.minGSRValue))
+              * this.state.scaling)
+              + this.state.offset,
+      easing: Easing.ease,
+    }).start();
   }
 
   render () {
@@ -83,7 +106,7 @@ export default class Results extends Component {
               min={this.state.minTimeOffset}
               max={this.state.maxTimeOffset}
               lowerTrackColor='#FFFFFF'
-              onChange={(timeOffset) => {}}/>
+              onChange={(timeOffset) => {this.displayVisual(timeOffset)}}/>
       </View>
     );
   }
@@ -116,5 +139,6 @@ var styles = StyleSheet.create({
   },
   slider: {
     width: 300,
+    marginBottom: 100,
   }
 });
