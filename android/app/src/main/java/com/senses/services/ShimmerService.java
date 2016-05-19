@@ -57,7 +57,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -160,10 +162,10 @@ public class ShimmerService extends Service {
         shimmerLog.logData(objectCluster);
     }
 
-    public Bundle[] getTimeOffsetsAndGSRValuePairs() throws IOException {
-        List<Bundle> timeOffsetGsrValuePairs = new ArrayList<>();
+    public Map<Integer, Integer> getTimeOffsetsAndGSRValuePairs() throws IOException {
+        Map<Integer, Integer> timeOffsetAndGSRPairs = new HashMap<>();
         if (shimmerLog == null || shimmerLog.getOutputFile() == null) {
-            return null;
+            return timeOffsetAndGSRPairs;
         }
         CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
         List<String[]> logEntries = reader.readAll();
@@ -176,13 +178,9 @@ public class ShimmerService extends Service {
             Integer timeOffset = getIntegerValueFromColumn(2, logEntries.get(i)[0]);
             averageGSRValue /= GRANULARITY;
 
-            Bundle timeOffsetGSRPair = new Bundle();
-            timeOffsetGSRPair.putInt("timeOffset", timeOffset);
-            timeOffsetGSRPair.putInt("averageGSRValue", averageGSRValue);
-            timeOffsetGsrValuePairs.add(timeOffsetGSRPair);
+            timeOffsetAndGSRPairs.put(timeOffset, averageGSRValue);
         }
-        Bundle[] bundleArray = new Bundle[timeOffsetGsrValuePairs.size()];
-        return timeOffsetGsrValuePairs.toArray(bundleArray);
+        return timeOffsetAndGSRPairs;
     }
 
     private Integer getIntegerValueFromColumn(int columnNumber, String csvRow) {

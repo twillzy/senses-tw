@@ -23,14 +23,22 @@ export default class Results extends Component {
     this.state = {
       gsr: new Animated.Value(0),
       fetchedGsrValues: [],
+      minTimeOffset: 0,
+      maxTimeOffset: 0,
     };
   }
 
   componentWillMount() {
     var promise = getGSRValues();
     var self = this;
+    // this.dummyValues = [{timeOffset: 123, averageGSRValue: 123}, {timeOffset: 456, averageGSRValue: 456}];
+    // this.setState({fetchedGsrValues: this.dummyValues});
     promise.then(function(gsrValues) {
        self.setState({fetchedGsrValues: gsrValues});
+       console.warn(self.state.fetchedGsrValues);
+       self.setState({minTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[0])});
+       self.setState({maxTimeOffset: Object.keys(self.state.fetchedGsrValues)[self.state.fetchedGsrValues.length - 1]});
+       let timelineSlider = self.refs.timelineSlider;
     }, function(error) {
       console.log(error);
     });
@@ -38,25 +46,15 @@ export default class Results extends Component {
 
   componentDidMount() {
     ReactSplashScreen.hide();
-    let timelineSlider = this.refs.timelineSlider;
   }
 
   animateGSRValues() {
     var timing = Animated.timing;
     var timingSequence = [];
     var self = this;
-    //for testing
-    // var dummyValues = [340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450, 450,
-    //   23, 45, 340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450, 450, 23, 45,
-    //   340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500,
-    //   300, 200, 250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200,
-    //   250, 100, 40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100,
-    //   40, 79, 60, 450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60,
-    //   450, 450, 450, 23, 45,340, 500, 300, 200, 250, 100, 40, 79, 60, 450, 450,
-    //   450, 23, 45];
-    // self.setState({fetchedGsrValues: dummyValues});
     var min = Math.min(...self.state.fetchedGsrValues);
     var max = Math.max(...self.state.fetchedGsrValues);
+
     var offset = 180;
     var scaling = 135;
     self.state.fetchedGsrValues.forEach((value) => {
@@ -72,7 +70,6 @@ export default class Results extends Component {
   }
 
   render () {
-    
     return (
       <View style={GlobalStyles.container}>
         <Animated.View style={[styles.bar, {height: this.state.gsr}]}>
@@ -82,12 +79,11 @@ export default class Results extends Component {
           source={require('./../Assets/images/head.png')}/>
           <MKSlider
               ref="timelineSlider"
-              min={this.state.fetchedGsrValues[0].timeOffset}
-              max={this.state.fetchedGsrValues[this.state.fetchedGsrValues.length - 1].timeOffset}
-              value={0}
               style={styles.slider}
+              min={this.state.minTimeOffset}
+              max={this.state.maxTimeOffset}
               lowerTrackColor='#FFFFFF'
-              onChange={(curValue) => {console.warn(curValue)}}/>
+              onChange={(timeOffset) => {}}/>
       </View>
     );
   }

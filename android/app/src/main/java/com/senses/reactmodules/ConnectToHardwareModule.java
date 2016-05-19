@@ -109,10 +109,13 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             if (mShimmerService == null) {
                 return;
             }
-            Bundle[] timeOffsetGsrValues = mShimmerService.getTimeOffsetsAndGSRValuePairs();
-            WritableArray arrayOfGSRValues = Arguments.fromArray(timeOffsetGsrValues);
+            Map<Integer, Integer> timeOffsetGSRPairs = mShimmerService.getTimeOffsetsAndGSRValuePairs();
+            WritableMap writablePairs = Arguments.createMap();
+            for (Integer timeOffset : timeOffsetGSRPairs.keySet()) {
+                writablePairs.putInt(String.valueOf(timeOffset), timeOffsetGSRPairs.get(timeOffset));
+            }
             WritableMap map = Arguments.createMap();
-            map.putArray("gsrVals", arrayOfGSRValues);
+            map.putMap("gsrVals", writablePairs);
             promise.resolve(map);
         } catch (IllegalViewOperationException e) {
             promise.reject(e);
