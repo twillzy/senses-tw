@@ -31,8 +31,6 @@ export default class Results extends Component {
   componentWillMount() {
     var promise = getGSRValues();
     var self = this;
-    // this.dummyValues = [{timeOffset: 123, averageGSRValue: 123}, {timeOffset: 456, averageGSRValue: 456}];
-    // this.setState({fetchedGsrValues: this.dummyValues});
     promise.then(function(gsrValues) {
        self.setState({fetchedGsrValues: gsrValues});
        self.setState({minTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[0])});
@@ -40,13 +38,7 @@ export default class Results extends Component {
        self.setState({minGSRValue: Math.min(...Object.values(self.state.fetchedGsrValues))});
        self.setState({maxGSRValue: Math.max(...Object.values(self.state.fetchedGsrValues))});
 
-       console.log("===============");
        console.log(self.state.fetchedGsrValues);
-       console.log(self.state.minTimeOffset);
-       console.log(self.state.maxTimeOffset);
-       console.log(self.state.maxGSRValue);
-       console.log(self.state.minGSRValue);
-
        self.setState({scaling: 135});
        self.setState({offset: 180});
 
@@ -80,8 +72,10 @@ export default class Results extends Component {
     Animated.sequence(timingSequence).start();
   }
 
-  displayVisual(newValueInDecimals) {
-    var bestFitGSR = this.roundDownToNearestGSRValue(newValueInDecimals); //TODO
+  displayVisual(sliderValue) {
+    var bestFitTimeOffset = this.roundDownToNearestGSRValue(sliderValue);
+    var bestFitGSR = this.state.fetchedGsrValues[bestFitTimeOffset];
+    console.log(bestFitTimeOffset + ":" + bestFitGSR);
     Animated.timing(this.state.gsr,
     {
       toValue: (((bestFitGSR - this.state.minGSRValue) /
@@ -90,6 +84,23 @@ export default class Results extends Component {
               + this.state.offset,
       easing: Easing.ease,
     }).start();
+  }
+
+  roundDownToNearestGSRValue(sliderValue) {
+    sliderValue = parseInt(sliderValue);
+    var timeOffsets = Object.keys(this.state.fetchedGsrValues);
+    var startIndex = 0;
+    var endIndex = timeOffsets.length - 1;
+    var currentIndex = 0;
+    while (startIndex <= endIndex) {
+      currentIndex = (startIndex + endIndex) / 2 | 0;
+      if (sliderValue < timeOffsets[currentIndex]) {
+        endIndex = currentIndex - 1;
+      } else {
+        startIndex = currentIndex + 1;
+      }
+    }
+    return timeOffsets[currentIndex];
   }
 
   render () {
@@ -106,11 +117,10 @@ export default class Results extends Component {
               min={this.state.minTimeOffset}
               max={this.state.maxTimeOffset}
               lowerTrackColor='#FFFFFF'
-              onChange={(timeOffset) => {this.displayVisual(timeOffset)}}/>
+              onChange={(sliderValue) => {this.displayVisual(sliderValue)}}/>
       </View>
     );
   }
-
 }
 
 async function getGSRValues() {
@@ -139,6 +149,6 @@ var styles = StyleSheet.create({
   },
   slider: {
     width: 300,
-    marginBottom: 100,
+    marginBottom: 200,
   }
 });
