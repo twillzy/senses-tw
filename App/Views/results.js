@@ -87,39 +87,46 @@ export default class Results extends Component {
   animateGSRValues() {
     var timing = Animated.timing;
     var timingSequence = [];
-
+    // this.state.timeOffsetAndGsr.stopAnimation();
     this.setState({isReplaying: true});
-    this.setState({replayIsOverWhenBackToBeginning: 0});
 
     this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
-      if (timeOffset.value === this.state.minTimeOffset) {
+      if (timeOffset.value == this.state.minTimeOffset) {
         this.setState({replayIsOverWhenBackToBeginning: this.state.replayIsOverWhenBackToBeginning + 1});
-        if (this.state.replayIsOverWhenBackToBeginning === 2) {
-          this.setState({isReplaying: false});
-          this.state.timeOffsetAndGsr.x.removeAllListeners();
-        }
       }
-      this.refs.timelineSlider.value = timeOffset.value;
+      if (this.state.replayIsOverWhenBackToBeginning === 2) {
+        this.setState({isReplaying: false});
+        this.setState({replayIsOverWhenBackToBeginning: 0});
+        this.state.timeOffsetAndGsr.x.removeAllListeners();
+      } else {
+        this.setState({isReplaying: true});
+        this.refs.timelineSlider.value = timeOffset.value;
+      }
 
     });
 
+    var timeOffsets = Object.keys(this.state.fetchedGsrValues);
     var self = this;
-    var timeOffsets = Object.keys(self.state.fetchedGsrValues);
 
-    timeOffsets.forEach((timeOffset) => {
-      timingSequence.push(
-      timing(self.state.timeOffsetAndGsr,
-        {
-          toValue: {x: timeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[timeOffset])},
-          easing: Easing.ease,
-        }));
-        timingSequence.push(Animated.delay(timeOffset | 0));
-      });
+    for (var i = 1; i < timeOffsets.length; i++) {
+        var currentTimeOffset = timeOffsets[i];
+        var previousTimeOffset = timeOffsets[i - 1];
+        var timeDiff = currentTimeOffset - previousTimeOffset;
+
+        timingSequence.push(Animated.delay(timeDiff | 0));
+
+        timingSequence.push(
+        timing(self.state.timeOffsetAndGsr,
+          {
+            toValue: {x: currentTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[currentTimeOffset])},
+            easing: Easing.ease,
+          }));
+      }
 
       timingSequence.push(
         timing(self.state.timeOffsetAndGsr,
           {
-            toValue: {x: this.state.minTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[this.state.minTimeOffset])},
+            toValue: {x: self.state.minTimeOffset, y: self.state.fetchedGsrValues[self.state.minTimeOffset]},
             easing: Easing.ease,
           })
       );
@@ -151,7 +158,6 @@ export default class Results extends Component {
               lowerTrackColor='#FFFFFF'
               onChange={(sliderValue) => {
                 this.displayVisual(sliderValue)}}/>
-
 
             <MKButton
               backgroundColor="white"
