@@ -85,26 +85,14 @@ export default class Results extends Component {
   }
 
   animateGSRValues() {
-    var timing = Animated.timing;
-    var timingSequence = [];
-    // this.state.timeOffsetAndGsr.stopAnimation();
     this.setState({isReplaying: true});
 
     this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
-      if (timeOffset.value == this.state.minTimeOffset) {
-        this.setState({replayIsOverWhenBackToBeginning: this.state.replayIsOverWhenBackToBeginning + 1});
-      }
-      if (this.state.replayIsOverWhenBackToBeginning === 2) {
-        this.setState({isReplaying: false});
-        this.setState({replayIsOverWhenBackToBeginning: 0});
-        this.state.timeOffsetAndGsr.x.removeAllListeners();
-      } else {
-        this.setState({isReplaying: true});
-        this.refs.timelineSlider.value = timeOffset.value;
-      }
-
+      this.refs.timelineSlider.value = timeOffset.value;
     });
 
+    var timing = Animated.timing;
+    var timingSequence = [];
     var timeOffsets = Object.keys(this.state.fetchedGsrValues);
     var self = this;
 
@@ -116,17 +104,17 @@ export default class Results extends Component {
         timingSequence.push(Animated.delay(timeDiff | 0));
 
         timingSequence.push(
-        timing(self.state.timeOffsetAndGsr,
-          {
-            toValue: {x: currentTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[currentTimeOffset])},
-            easing: Easing.ease,
-          }));
+          timing(self.state.timeOffsetAndGsr,
+            {
+              toValue: {x: currentTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[currentTimeOffset])},
+              easing: Easing.ease,
+            }));
       }
 
       timingSequence.push(
         timing(self.state.timeOffsetAndGsr,
           {
-            toValue: {x: self.state.minTimeOffset, y: self.state.fetchedGsrValues[self.state.minTimeOffset]},
+            toValue: {x: self.state.minTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[self.state.minTimeOffset])},
             easing: Easing.ease,
           })
       );
