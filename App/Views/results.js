@@ -28,6 +28,7 @@ export default class Results extends Component {
       minTimeOffset: 0,
       maxTimeOffset: 0,
       isReplaying: false,
+      replayIsOverWhenBackToBeginning: 0,
     };
   }
 
@@ -35,7 +36,7 @@ export default class Results extends Component {
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
-      // var gsrValues = {120: 340, 200: 450, 300: 100, 400: 980, 500: 1000, 600: 89, 700: 234, 800: 789, 900: 897, 1000: 877};
+      // var gsrValues = {360: 340, 1200: 450, 3300: 100, 3600: 980, 4500: 1000, 4800: 89, 8100: 234, 9000: 789, 10200: 897, 13500: 877};
       self.setState({fetchedGsrValues: gsrValues});
       self.setState({minTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[0])});
       self.setState({maxTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[Object.keys(self.state.fetchedGsrValues).length - 1])});
@@ -86,13 +87,25 @@ export default class Results extends Component {
   animateGSRValues() {
     var timing = Animated.timing;
     var timingSequence = [];
-    var self = this;
+
     this.setState({isReplaying: true});
+    this.setState({replayIsOverWhenBackToBeginning: 0});
+
     this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
+      if (timeOffset.value === this.state.minTimeOffset) {
+        this.setState({replayIsOverWhenBackToBeginning: this.state.replayIsOverWhenBackToBeginning + 1});
+        if (this.state.replayIsOverWhenBackToBeginning === 2) {
+          this.setState({isReplaying: false});
+          this.state.timeOffsetAndGsr.x.removeAllListeners();
+        }
+      }
       this.refs.timelineSlider.value = timeOffset.value;
+
     });
 
+    var self = this;
     var timeOffsets = Object.keys(self.state.fetchedGsrValues);
+
     timeOffsets.forEach((timeOffset) => {
       timingSequence.push(
       timing(self.state.timeOffsetAndGsr,
@@ -103,6 +116,13 @@ export default class Results extends Component {
         timingSequence.push(Animated.delay(timeOffset | 0));
       });
 
+      timingSequence.push(
+        timing(self.state.timeOffsetAndGsr,
+          {
+            toValue: {x: this.state.minTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[this.state.minTimeOffset])},
+            easing: Easing.ease,
+          })
+      );
     Animated.sequence(timingSequence).start();
   }
 
@@ -129,7 +149,6 @@ export default class Results extends Component {
               min={this.state.minTimeOffset}
               max={this.state.maxTimeOffset}
               lowerTrackColor='#FFFFFF'
-              disabled={this.state.isReplaying}
               onChange={(sliderValue) => {
                 this.displayVisual(sliderValue)}}/>
 
