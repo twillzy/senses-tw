@@ -27,6 +27,7 @@ export default class Results extends Component {
       fetchedGsrValues: [],
       minTimeOffset: 0,
       maxTimeOffset: 0,
+      isReplaying: false,
     };
   }
 
@@ -53,6 +54,9 @@ export default class Results extends Component {
   }
 
   displayVisual(sliderValue) {
+    if (this.state.isReplaying === true) {
+      return;
+    }
     var bestFitTimeOffset = this.roundDownToNearestGSRValue(sliderValue);
     var bestFitGSR = this.state.fetchedGsrValues[bestFitTimeOffset];
     Animated.timing(this.state.timeOffsetAndGsr,
@@ -83,10 +87,9 @@ export default class Results extends Component {
     var timing = Animated.timing;
     var timingSequence = [];
     var self = this;
-
+    this.setState({isReplaying: true});
     this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
-      console.log(timeOffset);
-      this.refs.progressBar.progress = timeOffset.value / this.state.maxTimeOffset;
+      this.refs.timelineSlider.value = timeOffset.value;
     });
 
     var timeOffsets = Object.keys(self.state.fetchedGsrValues);
@@ -118,10 +121,6 @@ export default class Results extends Component {
         <Image
           style={styles.head}
           source={require('./../Assets/images/head.png')}/>
-        <MKProgress
-          style={styles.slider}
-          ref="progressBar"
-        />
 
         <View style={styles.rowContainer}>
           <MKSlider
@@ -130,6 +129,7 @@ export default class Results extends Component {
               min={this.state.minTimeOffset}
               max={this.state.maxTimeOffset}
               lowerTrackColor='#FFFFFF'
+              disabled={this.state.isReplaying}
               onChange={(sliderValue) => {
                 this.displayVisual(sliderValue)}}/>
 
