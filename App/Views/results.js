@@ -11,6 +11,7 @@ import React, {
 import MK, {
   MKSlider,
   MKButton,
+  MKProgress,
 } from 'react-native-material-kit';
 
 import GlobalStyles from './../../App/Styles/globalStyles';
@@ -22,8 +23,7 @@ export default class Results extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gsr: new Animated.Value(0),
-      currentSliderValue: new Animated.Value(0),
+      timeOffsetAndGsr: new Animated.ValueXY({x: 0, y: 0}),
       fetchedGsrValues: [],
       minTimeOffset: 0,
       maxTimeOffset: 0,
@@ -55,9 +55,9 @@ export default class Results extends Component {
   displayVisual(sliderValue) {
     var bestFitTimeOffset = this.roundDownToNearestGSRValue(sliderValue);
     var bestFitGSR = this.state.fetchedGsrValues[bestFitTimeOffset];
-    Animated.timing(this.state.gsr,
+    Animated.timing(this.state.timeOffsetAndGsr,
     {
-      toValue: this.normaliseGSR(bestFitGSR),
+      toValue: {x: bestFitTimeOffset, y: this.normaliseGSR(bestFitGSR)},
       easing: Easing.ease,
     }).start();
   }
@@ -84,12 +84,17 @@ export default class Results extends Component {
     var timingSequence = [];
     var self = this;
 
+    this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
+      console.log(timeOffset);
+      this.refs.progressBar.progress = timeOffset.value / this.state.maxTimeOffset;
+    });
+
     var timeOffsets = Object.keys(self.state.fetchedGsrValues);
     timeOffsets.forEach((timeOffset) => {
       timingSequence.push(
-      timing(self.state.gsr,
+      timing(self.state.timeOffsetAndGsr,
         {
-          toValue: self.normaliseGSR(self.state.fetchedGsrValues[timeOffset]),
+          toValue: {x: timeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[timeOffset])},
           easing: Easing.ease,
         }));
         timingSequence.push(Animated.delay(timeOffset | 0));
@@ -108,13 +113,17 @@ export default class Results extends Component {
   render () {
     return (
       <View style={GlobalStyles.container}>
-        <Animated.View style={[styles.bar, {height: this.state.gsr}]}>
+        <Animated.View style={[styles.bar, {height: this.state.timeOffsetAndGsr.y}]}>
         </Animated.View>
         <Image
           style={styles.head}
           source={require('./../Assets/images/head.png')}/>
+        <MKProgress
+          style={styles.slider}
+          ref="progressBar"
+        />
+
         <View style={styles.rowContainer}>
-        <Animated.View>
           <MKSlider
               ref="timelineSlider"
               style={styles.slider}
@@ -123,18 +132,17 @@ export default class Results extends Component {
               lowerTrackColor='#FFFFFF'
               onChange={(sliderValue) => {
                 this.displayVisual(sliderValue)}}/>
-        </Animated.View>
 
 
-          <MKButton
-            backgroundColor="white"
-            borderRadius={4}
-            padding={15}
-            onPress={this.animateGSRValues.bind(this)}
-            >
-              <Text>
-                >
-              </Text>
+            <MKButton
+              backgroundColor="white"
+              borderRadius={4}
+              padding={15}
+              onPress={this.animateGSRValues.bind(this)}
+              >
+                <Text>
+                  >
+                </Text>
             </MKButton>
           </View>
         </View>
