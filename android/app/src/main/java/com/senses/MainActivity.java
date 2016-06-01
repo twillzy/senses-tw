@@ -1,5 +1,8 @@
 package com.senses;
 
+import android.content.Intent;
+import android.provider.MediaStore;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
@@ -11,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends ReactActivity {
+    private static final int REQUEST_VIDEO_CAPTURE = 1;
     private ReactInstanceManager mReactInstanceManager;
 
     /**
@@ -31,6 +35,13 @@ public class MainActivity extends ReactActivity {
         return BuildConfig.DEBUG;
     }
 
+    public void startVideoCapture() {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
+    }
+
     /**
      * A list of packages used by the app. If the app uses additional views
      * or modules besides the default ones, add more packages here.
@@ -41,7 +52,7 @@ public class MainActivity extends ReactActivity {
                 new MainReactPackage(),
                 new ReactMaterialKitPackage(),
                 new RCTSplashScreenPackage(this),
-                new ShimmerReactPackage()
+                new ShimmerReactPackage(this)
         );
     }
 }

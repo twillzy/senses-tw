@@ -1,4 +1,4 @@
-package com.senses.services;
+package com.senses.services.btdevice;
 
 //v0.2 -  8 January 2013
 
@@ -42,7 +42,6 @@ package com.senses.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -56,7 +55,6 @@ import com.shimmerresearch.tools.Logging;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,7 +250,7 @@ public class ShimmerService extends Service {
         }
 
         private void createAndBroadcastIntent(ObjectCluster objectCluster, DeviceStatus status) {
-            Intent intent = new Intent("com.senses.services.ShimmerService");
+            Intent intent = new Intent("com.senses.services.btdevice.ShimmerService");
             Log.d("Shimmer", objectCluster.mBluetoothAddress + "  " + objectCluster.mMyName);
             intent.putExtra("ShimmerBluetoothAddress", objectCluster.mBluetoothAddress);
             intent.putExtra("ShimmerDeviceName", objectCluster.mMyName);

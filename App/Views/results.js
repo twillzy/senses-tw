@@ -36,7 +36,7 @@ export default class Results extends Component {
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
-      // var gsrValues = {360: 340, 1200: 450, 3300: 100, 3600: 980, 4500: 1000, 4800: 89, 8100: 234, 9000: 789, 10200: 897, 13500: 877};
+      var gsrValues = {360: 340, 1200: 450, 3300: 100, 3600: 980, 4500: 1000, 4800: 89, 8100: 234, 9000: 789, 10200: 897, 13500: 877};
       self.setState({fetchedGsrValues: gsrValues});
       self.setState({minTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[0])});
       self.setState({maxTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[Object.keys(self.state.fetchedGsrValues).length - 1])});
@@ -58,6 +58,7 @@ export default class Results extends Component {
     if (this.state.isReplaying === true) {
       return;
     }
+    this.state.fetchedGsrValues.stopAnimation();
     var bestFitTimeOffset = this.roundDownToNearestGSRValue(sliderValue);
     var bestFitGSR = this.state.fetchedGsrValues[bestFitTimeOffset];
     Animated.timing(this.state.timeOffsetAndGsr,

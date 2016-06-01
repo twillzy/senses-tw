@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,11 +19,11 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.senses.services.DeviceStatus;
-import com.senses.services.ShimmerService;
+import com.senses.services.btdevice.DeviceStatus;
+import com.senses.services.btdevice.ShimmerService;
+import com.senses.video.VideoCapture;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,6 +36,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     private static final int REQUEST_ENABLE_BT = 1;
     private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
     final ReactApplicationContext reactContext;
+    private final VideoCapture videoCapture;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
@@ -53,11 +53,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     };
 
-    public ConnectToHardwareModule(ReactApplicationContext reactContext) {
+    public ConnectToHardwareModule(ReactApplicationContext reactContext, Activity activity) {
         super(reactContext);
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
         this.reactContext.addActivityEventListener(this);
+        this.videoCapture = new VideoCapture(activity);
         doBindService();
         doBindBroadcastReceiver();
     }
@@ -179,7 +180,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     private void doBindBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter("com.senses.services.ShimmerService");
+        IntentFilter intentFilter = new IntentFilter("com.senses.services.btdevice.ShimmerService");
         reactContext.registerReceiver(new ShimmerReceiver(), intentFilter);
     }
 
@@ -210,6 +211,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                 case READY_TO_STREAM:
                     mShimmerService.setEnableLogging(true);
                     mShimmerService.startStreamingGSRData();
+
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:

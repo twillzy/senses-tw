@@ -1,4 +1,4 @@
-package com.senses.services;
+package com.senses.services.btdevice;
 
 public enum DeviceStatus {
     DISCONNECTED,
