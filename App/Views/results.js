@@ -14,6 +14,8 @@ import MK, {
   MKProgress,
 } from 'react-native-material-kit';
 
+import blueToothIsToggledOn from '../../featureToggle';
+
 import GlobalStyles from './../../App/Styles/globalStyles';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
@@ -62,10 +64,10 @@ export default class Results extends Component {
     var bestFitTimeOffset = this.roundDownToNearestGSRValue(sliderValue);
     var bestFitGSR = this.state.fetchedGsrValues[bestFitTimeOffset];
     Animated.timing(this.state.timeOffsetAndGsr,
-    {
-      toValue: {x: bestFitTimeOffset, y: this.normaliseGSR(bestFitGSR)},
-      easing: Easing.ease,
-    }).start();
+                    {
+                      toValue: {x: bestFitTimeOffset, y: this.normaliseGSR(bestFitGSR)},
+                      easing: Easing.ease,
+                    }).start();
   }
 
   roundDownToNearestGSRValue(sliderValue) {
@@ -98,81 +100,87 @@ export default class Results extends Component {
     var self = this;
 
     for (var i = 1; i < timeOffsets.length; i++) {
-        var currentTimeOffset = timeOffsets[i];
-        var previousTimeOffset = timeOffsets[i - 1];
-        var timeDiff = currentTimeOffset - previousTimeOffset;
+      var currentTimeOffset = timeOffsets[i];
+      var previousTimeOffset = timeOffsets[i - 1];
+      var timeDiff = currentTimeOffset - previousTimeOffset;
 
-        timingSequence.push(Animated.delay(timeDiff | 0));
-
-        timingSequence.push(
-          timing(self.state.timeOffsetAndGsr,
-            {
-              toValue: {x: currentTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[currentTimeOffset])},
-              easing: Easing.ease,
-            }));
-      }
+      timingSequence.push(Animated.delay(timeDiff | 0));
 
       timingSequence.push(
         timing(self.state.timeOffsetAndGsr,
-          {
-            toValue: {x: self.state.minTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[self.state.minTimeOffset])},
-            easing: Easing.ease,
-          })
-      );
+               {
+                 toValue: {x: currentTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[currentTimeOffset])},
+                 easing: Easing.ease,
+               }));
+    }
+
+    timingSequence.push(
+      timing(self.state.timeOffsetAndGsr,
+             {
+               toValue: {x: self.state.minTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[self.state.minTimeOffset])},
+               easing: Easing.ease,
+             })
+    );
     Animated.sequence(timingSequence).start();
   }
 
   normaliseGSR(gsrValue) {
     return (((gsrValue - this.state.minGSRValue) /
-            (this.state.maxGSRValue - this.state.minGSRValue))
-            * this.state.scaling)
-            + this.state.offset;
+             (this.state.maxGSRValue - this.state.minGSRValue))
+    * this.state.scaling)
+    + this.state.offset;
   }
 
   render () {
     return (
       <View style={GlobalStyles.container}>
-        <Animated.View style={[styles.bar, {height: this.state.timeOffsetAndGsr.y}]}>
-        </Animated.View>
-        <Image
-          style={styles.head}
-          source={require('./../Assets/images/head.png')}/>
+      <Animated.View style={[styles.bar, {height: this.state.timeOffsetAndGsr.y}]}>
+      </Animated.View>
+      <Image
+      style={styles.head}
+      source={require('./../Assets/images/head.png')}/>
 
-        <View style={styles.rowContainer}>
-          <MKSlider
-              ref="timelineSlider"
-              style={styles.slider}
-              min={this.state.minTimeOffset}
-              max={this.state.maxTimeOffset}
-              lowerTrackColor='#FFFFFF'
-              onChange={(sliderValue) => {
-                this.displayVisual(sliderValue)}}/>
+      <View style={styles.rowContainer}>
+      <MKSlider
+      ref="timelineSlider"
+      style={styles.slider}
+      min={this.state.minTimeOffset}
+      max={this.state.maxTimeOffset}
+      lowerTrackColor='#FFFFFF'
+      onChange={(sliderValue) => {
+        this.displayVisual(sliderValue)}}/>
 
-            <MKButton
-              backgroundColor="white"
-              borderRadius={4}
-              padding={15}
-              onPress={this.animateGSRValues.bind(this)}
-              >
-                <Text>
-                  >
-                </Text>
-            </MKButton>
-          </View>
+        <MKButton
+        backgroundColor="white"
+        borderRadius={4}
+        padding={15}
+        onPress={this.animateGSRValues.bind(this)}
+        >
+        <Text>
+        >
+        </Text>
+        </MKButton>
+        </View>
         </View>
     );
   }
 }
 
 async function getGSRValues() {
-  try {
-    var {
-      gsrVals
-    } = await ConnectToHardwareModule.getGSRData();
-    return gsrVals;
-  } catch (error) {
-    console.error(error);
+
+  if (blueToothIsToggledOn) {
+    try {
+      var {
+        gsrVals
+      } = await ConnectToHardwareModule.getGSRData();
+      return gsrVals;
+    } catch (error) {
+      console.error(error);
+    }
   }
+
+  var gsrValues = {360: 340, 1200: 450, 3300: 100, 3600: 980, 4500: 1000, 4800: 89, 8100: 234, 9000: 789, 10200: 897, 13500: 877};
+  return gsrValues;
 }
 
 var styles = StyleSheet.create({

@@ -8,6 +8,8 @@ import MK, {
   MKButton,
 } from 'react-native-material-kit';
 
+import blueToothIsToggledOn from '../../featureToggle';
+
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import GlobalStyles from './../../App/Styles/globalStyles';
@@ -26,13 +28,13 @@ export default class Connect extends Component {
     var self = this;
     var promise = enableBluetooth();
     promise.then(function(connectedToBluetooth) {
-       if (connectedToBluetooth === "OK") {
+      if (connectedToBluetooth === "OK") {
         console.log("OK");
         self.setState({isBluetoothEnabled: true});
         ReactSplashScreen.hide();
-       } else if (connectedToBluetooth === "CANCEL") {
-          //TODO could not connect to bluetooth, display view here
-       }
+      } else if (connectedToBluetooth === "CANCEL") {
+        //TODO could not connect to bluetooth, display view here
+      }
     }, function(error) {
       console.log(error);
     });
@@ -49,18 +51,18 @@ export default class Connect extends Component {
 
     return (
       <View style={GlobalStyles.container}>
-        <MKButton
-          backgroundColor="white"
-          borderRadius={4}
-          padding={15}
-          disabled={this.state.buttonHasBeenPressed}
-          onPress={this.handlePress.bind(this)}
-          >
-          <Text pointerEvents="none"
-                style={[GlobalStyles.blueText, GlobalStyles.boldText]}>
-            {buttonText}
-          </Text>
-        </MKButton>
+      <MKButton
+      backgroundColor="white"
+      borderRadius={4}
+      padding={15}
+      disabled={this.state.buttonHasBeenPressed}
+      onPress={this.handlePress.bind(this)}
+      >
+      <Text pointerEvents="none"
+      style={[GlobalStyles.blueText, GlobalStyles.boldText]}>
+      {buttonText}
+      </Text>
+      </MKButton>
       </View>
     );
   }
@@ -94,12 +96,15 @@ async function connectToShimmer() {
 }
 
 async function enableBluetooth() {
-  try {
-    var {
-      connectedToBluetooth
-    } = await ConnectToHardwareModule.enableBluetooth();
-    return connectedToBluetooth;
-  } catch (e) {
-    console.error(e);
+  if (blueToothIsToggledon) {
+    try {
+      var {
+        connectedToBluetooth
+      } = await ConnectToHardwareModule.enableBluetooth();
+      return connectedToBluetooth;
+    } catch (e) {
+      console.error(e);
+    }
   }
+  return "OK";
 }
