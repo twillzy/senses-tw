@@ -23,7 +23,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.btdevice.DeviceStatus;
 import com.senses.services.btdevice.ShimmerService;
-import com.senses.video.VideoCapture;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +35,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     private static final int REQUEST_ENABLE_BT = 1;
     private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
     final ReactApplicationContext reactContext;
-    private final VideoCapture videoCapture;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
@@ -53,12 +51,11 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     };
 
-    public ConnectToHardwareModule(ReactApplicationContext reactContext, Activity activity) {
+    public ConnectToHardwareModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
         this.reactContext.addActivityEventListener(this);
-        this.videoCapture = new VideoCapture(activity);
         doBindService();
         doBindBroadcastReceiver();
     }

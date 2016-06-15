@@ -131,6 +131,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-video')
     compile project(':ShimmerAndroidInstrumentDriver')
     compile 'com.facebook.react:react-native:+'
     // From node_modules
