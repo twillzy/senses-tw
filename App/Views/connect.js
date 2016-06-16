@@ -96,7 +96,8 @@ async function connectToShimmer() {
 }
 
 async function enableBluetooth() {
-  if (blueToothIsToggledon) {
+  console.log(blueToothIsToggledOn);
+  if (blueToothIsToggledOn) {
     try {
       var {
         connectedToBluetooth

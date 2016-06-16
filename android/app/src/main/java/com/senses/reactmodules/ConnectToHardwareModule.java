@@ -41,7 +41,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
     private Promise promise;
+
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mShimmerService = ((ShimmerService.LocalBinder) service).getService();
