@@ -214,11 +214,13 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     mShimmerService.setEnableLogging(true);
                     mShimmerService.startStreamingGSRData();
 
+                    Toast.makeText(getReactApplicationContext(), "Start timing now!!!", Toast.LENGTH_LONG).show();
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
                     try {
                         mShimmerService.stopWritingToLog();
+                        Toast.makeText(getReactApplicationContext(), "Stopped writing to log!!!", Toast.LENGTH_LONG).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

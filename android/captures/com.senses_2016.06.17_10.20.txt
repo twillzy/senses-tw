@@ -1,0 +1,42 @@
+TASK com.senses id=6133
+  ACTIVITY com.senses/.MainActivity 38ff6407 pid=32739
+    Local Activity 344c8b3f State:
+      mResumed=false mStopped=true mFinished=false
+      mLoadersStarted=false
+      mChangingConfigurations=false
+      mCurrentConfig={0 1.0 themeSeq=0 505mcc3mnc en_AU ?layoutDir sw360dp w360dp h615dp 640dpi nrml long port finger -keyb/v/h -nav/h mkbd/h s.24}
+      mMultiWindowStyle=MultiWindowStyle{type=0, zone=ZONE_UNKNOWN, option=0x00000000, bounds=null, isNull=false, isolatedCenterPoint=Point(0, 0), scale=0.0, specificTaskId=-1}
+    FragmentManager misc state:
+      mActivity=com.senses.MainActivity@344c8b3f
+      mContainer=android.app.Activity$1@1527df6a
+      mCurState=3 mStateSaved=true mDestroyed=false
+    ViewRoot:
+      mAdded=true mRemoved=false
+      mConsumeBatchedInputScheduled=false
+      mConsumeBatchedInputImmediatelyScheduled=false
+      mPendingInputEventCount=0
+      mProcessInputEventsScheduled=false
+      mTraversalScheduled=false
+      android.view.ViewRootImpl$NativePreImeInputStage: mQueueLength=0
+      android.view.ViewRootImpl$ImeInputStage: mQueueLength=0
+      android.view.ViewRootImpl$NativePostImeInputStage: mQueueLength=0
+    Choreographer:
+      mFrameScheduled=false
+      mLastFrameTime=25668842 (14774 ms ago)
+    View Hierarchy:
+      com.android.internal.policy.impl.PhoneWindow$DecorView{1e089c5b V.E..... R....... 0,0-1440,2560}
+        android.widget.LinearLayout{32b07cf8 V.E..... ........ 0,0-1440,2560}
+          android.view.ViewStub{3b08f5d1 G.E..... ......I. 0,0-0,0 #1020417}
+          android.widget.FrameLayout{e5c8836 V.E..... ........ 0,100-1440,2560 #1020002 android:id/content}
+            com.facebook.react.ReactRootView{1eaaa337 V.E..... ........ 0,0-1440,2460 #1}
+              com.facebook.react.views.view.ReactViewGroup{3fec70a4 V.E..... ........ 0,0-1440,2460 #4}
+                com.facebook.react.views.view.ReactViewGroup{4d61e0d V.E..... ........ 0,0-1440,2460 #5}
+                  com.facebook.react.views.view.ReactViewGroup{1760f1c2 V.E..... ........ 0,0-1440,2460 #6}
+                    com.facebook.react.views.view.ReactViewGroup{3bfc3bd3 V.E..... ........ 0,0-1440,2460 #7}
+                      com.github.xinthink.rnmk.widget.MKTouchable{3cd1f310 VFE..... ........ 449,1132-991,1328 #8}
+                        com.facebook.react.views.text.ReactTextView{2bd38e09 V.ED.... ........ 60,60-482,136 #9}
+                        com.facebook.react.views.view.ReactViewGroup{250680e V.E..... ........ 0,0-542,196 #c}
+                          com.facebook.react.views.view.ReactViewGroup{4c4c22f V.E..... ......ID 0,0-0,0 #d}
+        android.view.View{1a4b303c V.ED.... ........ 0,0-1440,100 #102002f android:id/statusBarBackground}
+    Looper (main, tid 1) {251e01c5}
+      (Total messages: 0, idling=false, quitting=false)

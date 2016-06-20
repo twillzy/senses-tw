@@ -54,6 +54,7 @@ import com.shimmerresearch.tools.Logging;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -178,6 +179,11 @@ public class ShimmerService extends Service {
 
             timeOffsetAndGSRPairs.put(timeOffset, averageGSRValue);
         }
+        logEntries.clear();
+        PrintWriter writer = new PrintWriter(shimmerLog.getOutputFile());
+        writer.print("");
+        writer.close();
+
         return timeOffsetAndGSRPairs;
     }
 
