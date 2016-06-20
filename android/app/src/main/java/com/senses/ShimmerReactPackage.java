@@ -1,6 +1,9 @@
 package com.senses;
 
+import android.app.Activity;
+
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -13,21 +16,27 @@ import java.util.List;
 
 class ShimmerReactPackage implements ReactPackage {
 
-  @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
-  }
+    private final Activity activity;
 
-  @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.emptyList();
-  }
+    public ShimmerReactPackage(Activity activity) {
+        this.activity = activity;
+    }
 
-  @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    @Override
+    public List<Class<? extends JavaScriptModule>> createJSModules() {
+        return Collections.emptyList();
+    }
 
-      List<NativeModule> modules = new ArrayList<>();
-      modules.add(new ConnectToHardwareModule(reactContext));
-      return modules;
-  }
+    @Override
+    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+
+        List<NativeModule> modules = new ArrayList<>();
+        modules.add(new ConnectToHardwareModule(reactContext, activity));
+        return modules;
+    }
 }

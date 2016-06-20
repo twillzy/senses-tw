@@ -44,8 +44,8 @@ public class MainActivity extends ReactActivity {
                 new ReactVideoPackage(),
                 new ReactMaterialKitPackage(),
                 new RCTSplashScreenPackage(this),
-                new SensesVideoViewPackage(this),
-                new ShimmerReactPackage()
+//                new SensesVideoViewPackage(this),
+                new ShimmerReactPackage(this)
         );
     }
 }

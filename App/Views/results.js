@@ -36,6 +36,7 @@ export default class Results extends Component {
     var promise = getGSRValues();
     var self = this;
     promise.then(function(gsrValues) {
+      console.log(gsrValues);
       var gsrValues = {360: 340, 1200: 450, 3300: 100, 3600: 980, 4500: 1000, 4800: 89, 8100: 234, 9000: 789, 10200: 897, 13500: 877};
       self.setState({fetchedGsrValues: gsrValues});
       self.setState({minTimeOffset: parseInt(Object.keys(self.state.fetchedGsrValues)[0])});

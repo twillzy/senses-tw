@@ -51,7 +51,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         }
     };
 
-    public ConnectToHardwareModule(ReactApplicationContext reactContext) {
+    public ConnectToHardwareModule(ReactApplicationContext reactContext, Activity activity) {
         super(reactContext);
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
@@ -107,7 +107,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             if (mShimmerService == null) {
                 return;
             }
-            Map<Integer, Integer> timeOffsetGSRPairs = mShimmerService.getTimeOffsetsAndGSRValuePairs();
+            Map<Integer, Integer> timeOffsetGSRPairs = mShimmerService.getGSRDataFromFile();
             WritableMap writablePairs = Arguments.createMap();
             for (Integer timeOffset : timeOffsetGSRPairs.keySet()) {
                 writablePairs.putInt(String.valueOf(timeOffset), timeOffsetGSRPairs.get(timeOffset));
@@ -203,7 +203,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     Log.d("Shimmer", "Connecting to Shimmer now");
                     break;
                 case DISCONNECTED:
-                    Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getReactApplicationContext(), "Lost Connection", Toast.LENGTH_LONG).show();
                     break;
                 case READY_TO_STREAM:
                     mShimmerService.setEnableLogging(true);
@@ -212,11 +212,10 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
-                    try {
-                        mShimmerService.stopWritingToLog();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Toast.makeText(getReactApplicationContext(), "Streaming Stopped", Toast.LENGTH_LONG).show();
+                    mShimmerService.stopWritingToLog();
+                    mShimmerService.setShimmerLog(null);
+                    break;
             }
         }
     }
