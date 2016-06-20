@@ -10,7 +10,7 @@ import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import MK, {
   MKButton,
 } from 'react-native-material-kit';
-import VideoCaptureModule from './../../App/Modules/VideoCaptureModule';
+// import VideoCaptureModule from './../../App/Modules/VideoCaptureModule';
 import SensesVideoView from './../../App/NativeViews/VideoView';
 import Video from 'react-native-video';
 

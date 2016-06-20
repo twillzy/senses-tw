@@ -55,7 +55,6 @@ import com.shimmerresearch.tools.Logging;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -162,47 +161,30 @@ public class ShimmerService extends Service {
         shimmerLog.logData(objectCluster);
     }
 
-//    public Map<Integer, Integer> getTimeOffsetsAndGSRValuePairs() throws IOException {
-//        Map<Integer, Integer> timeOffsetAndGSRPairs = new HashMap<>();
-//        if (shimmerLog == null || shimmerLog.getOutputFile() == null) {
-//            return timeOffsetAndGSRPairs;
-//        }
-//        CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
-//        List<String[]> logEntries = reader.readAll();
-//        for (int i = GRANULARITY; i < logEntries.size() - GRANULARITY; i += GRANULARITY) {
-//            int averageGSRValue = 0;
-//            for (int j = i; j < i + GRANULARITY; j++) {
-//                Integer gsrValue = getIntegerValueFromColumn(0, logEntries.get(j)[0]);
-//                averageGSRValue += gsrValue;
-//            }
-//            Integer timeOffset = getIntegerValueFromColumn(2, logEntries.get(i)[0]);
-//            averageGSRValue /= GRANULARITY;
-//
-//            timeOffsetAndGSRPairs.put(timeOffset, averageGSRValue);
-//        }
-//        return timeOffsetAndGSRPairs;
-//    }
-
-    public Map<Integer, Integer> getGSRDataFromFile() throws IOException {
-        Map<Integer, Integer> gsrValues = new HashMap<>();
-//        List<Integer> gsrValues = new ArrayList<>();
-        if (shimmerLog.getOutputFile() == null) {
-            return gsrValues;
+    public Map<Integer, Integer> getTimeOffsetsAndGSRValuePairs() throws IOException {
+        Map<Integer, Integer> timeOffsetAndGSRPairs = new HashMap<>();
+        if (shimmerLog == null || shimmerLog.getOutputFile() == null) {
+            return timeOffsetAndGSRPairs;
         }
         CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
         List<String[]> logEntries = reader.readAll();
+
         List<String> formatNames = Arrays.asList(logEntries.get(3)[0].split("\t"));
         Integer indexOfMSecs = formatNames.indexOf("mSecs");
         Integer indexOfKOhms = formatNames.indexOf("kOhms");
+        for (int i = GRANULARITY; i < logEntries.size() - GRANULARITY; i += GRANULARITY) {
+            int averageGSRValue = 0;
+            for (int j = i; j < i + GRANULARITY; j++) {
+                Integer gsrValue = getIntegerValueFromColumn(indexOfKOhms, logEntries.get(j)[0]);
+                averageGSRValue += gsrValue;
+            }
+            Integer timeOffset = getIntegerValueFromColumn(indexOfMSecs, logEntries.get(i)[0]);
+            averageGSRValue /= GRANULARITY;
 
-        for (int i = 20; i < logEntries.size(); i += 20) {
-            Integer gsrValue = Math.round(Float.parseFloat(logEntries.get(i)[0]
-                    .split("\t")[indexOfKOhms]));
-            Integer time = Math.round(Float.parseFloat(logEntries.get(i)[0]
-                    .split("\t")[indexOfMSecs]));
-            gsrValues.put(time, gsrValue);
+            timeOffsetAndGSRPairs.put(timeOffset, averageGSRValue);
         }
-        return gsrValues;
+
+        return timeOffsetAndGSRPairs;
     }
 
     private Integer getIntegerValueFromColumn(int columnNumber, String csvRow) {

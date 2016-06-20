@@ -23,6 +23,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.btdevice.DeviceStatus;
 import com.senses.services.btdevice.ShimmerService;
+import com.shimmerresearch.tools.Logging;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -107,7 +108,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             if (mShimmerService == null) {
                 return;
             }
-            Map<Integer, Integer> timeOffsetGSRPairs = mShimmerService.getGSRDataFromFile();
+            Map<Integer, Integer> timeOffsetGSRPairs = mShimmerService.getTimeOffsetsAndGSRValuePairs();
             WritableMap writablePairs = Arguments.createMap();
             for (Integer timeOffset : timeOffsetGSRPairs.keySet()) {
                 writablePairs.putInt(String.valueOf(timeOffset), timeOffsetGSRPairs.get(timeOffset));
@@ -203,18 +204,18 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     Log.d("Shimmer", "Connecting to Shimmer now");
                     break;
                 case DISCONNECTED:
-                    Toast.makeText(getReactApplicationContext(), "Lost Connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case READY_TO_STREAM:
+//                    mShimmerService.setShimmerLog(null);
                     mShimmerService.setEnableLogging(true);
                     mShimmerService.startStreamingGSRData();
 
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
-                    Toast.makeText(getReactApplicationContext(), "Streaming Stopped", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();
                     mShimmerService.stopWritingToLog();
-                    mShimmerService.setShimmerLog(null);
                     break;
             }
         }
