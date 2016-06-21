@@ -104,6 +104,17 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
+    public void disconnectShimmerFromAndroidDevice(Promise promise) {
+        this.promise = promise;
+        try {
+            mShimmerService.disconnectShimmer();
+            Log.d("SHIMMER", "Disconnect");
+        } catch (IllegalViewOperationException e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getGSRData(Promise promise) {
         this.promise = promise;
         try {
@@ -207,6 +218,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     break;
                 case DISCONNECTED:
                     Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
+                    resolvePromiseWithArgument("connectionStatus", "disconnected");
                     break;
                 case READY_TO_STREAM:
 //                    mShimmerService.setShimmerLog(null);
@@ -219,6 +231,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                 case STREAMING_STOPPED:
                     Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();
                     mShimmerService.stopWritingToLog();
+                    resolvePromiseWithArgument("streamingStatus", "STOPPED");
                     break;
             }
         }

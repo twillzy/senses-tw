@@ -14,7 +14,7 @@ import MK, {
   MKProgress,
 } from 'react-native-material-kit';
 
-import blueToothIsToggledOn from '../../featureToggle';
+import blueToothIsToggledOn from '../FeatureToggles/featureToggles';
 
 import GlobalStyles from './../../App/Styles/globalStyles';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';

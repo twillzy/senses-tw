@@ -27,18 +27,20 @@ export default class Connect extends Component {
   componentDidMount() {
     var self = this;
     var promise = enableBluetooth();
-    promise.then(function(connectedToBluetooth) {
+
+    promise.then((connectedToBluetooth) => {
       if (connectedToBluetooth === "OK") {
-        console.log("OK");
-        self.setState({isBluetoothEnabled: true});
+        console.log("Connected to Bluetooth - OK");
+        self.setState({isBlueToothEnabled: true});
         ReactSplashScreen.hide();
       } else if (connectedToBluetooth === "CANCEL") {
-        //TODO could not connect to bluetooth, display view here
+        // TODO could not connect, display view here
       }
-    }, function(error) {
+    }, (error) => {
       console.log(error);
     });
   }
+
 
   _navigate(property){
     this.props.navigator.push({

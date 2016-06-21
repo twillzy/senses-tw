@@ -12,7 +12,7 @@
     "react-native": "^0.24.1",
     "react-native-material-kit": "^0.3.1",
     "react-timer-mixin": "^0.13.3",
-    "react-tween-state": "^0.1.5"
-    "react-native-video": "^0.8.0",
+    "react-tween-state": "^0.1.5",
+    "react-native-video": "^0.8.0"
   }
 }
