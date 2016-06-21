@@ -35,6 +35,9 @@ local.properties
 node_modules/
 npm-debug.log
 
+# vim
+.swp
+
 # BUCK
 buck-out/
 \.buckd/
