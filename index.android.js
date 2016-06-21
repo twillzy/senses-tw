@@ -8,6 +8,7 @@ import React, {
 import Connect from './App/Views/connect';
 import Sense from './App/Views/sense';
 import Results from './App/Views/results';
+import Camera from './App/Views/camera';
 
 var _navigator;
 
@@ -19,6 +20,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     return <Sense navigator={navigationOperations}/>
   } else if (route.name === 'results') {
     return <Results navigator={navigationOperations}/>
+  } else if (route.name == 'camera') {
+    return <Camera navigator={navigationOperations}/>
   }
 };
 

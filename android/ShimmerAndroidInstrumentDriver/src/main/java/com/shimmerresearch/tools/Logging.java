@@ -43,6 +43,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -119,6 +120,7 @@ public class Logging {
 				mSensorNames=new String[size];
 				mSensorFormats=new String[size];
 				mSensorUnits=new String[size];
+
 				int i=0;
 				int p=0;
 				 for(String key : m.keys()) {
@@ -137,8 +139,7 @@ public class Logging {
 					 mSensorNames[i]=key;
 					 i++;				 
 				 	}
-			 	
-			
+
 			// write header to a file
 			
 			writer = new BufferedWriter(new FileWriter(outputFile,false));
@@ -155,7 +156,7 @@ public class Logging {
             }
 			writer.newLine();
 			
-			for (int k=0;k<mSensorFormats.length;k++) { 
+			for (int k=0;k<mSensorFormats.length;k++) {
                 writer.write(mSensorFormats[k]);
                 
             	writer.write(mDelimiter);

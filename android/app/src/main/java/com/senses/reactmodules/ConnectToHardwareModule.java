@@ -23,7 +23,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.senses.services.btdevice.DeviceStatus;
 import com.senses.services.btdevice.ShimmerService;
-import com.senses.video.VideoCapture;
+import com.shimmerresearch.tools.Logging;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +36,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     private static final int REQUEST_ENABLE_BT = 1;
     private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
     final ReactApplicationContext reactContext;
-    private final VideoCapture videoCapture;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
@@ -60,7 +59,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
         this.reactContext.addActivityEventListener(this);
-        this.videoCapture = new VideoCapture(activity);
         doBindService();
         doBindBroadcastReceiver();
     }
@@ -211,6 +209,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case READY_TO_STREAM:
+//                    mShimmerService.setShimmerLog(null);
                     mShimmerService.setEnableLogging(true);
                     mShimmerService.startStreamingGSRData();
 
@@ -218,12 +217,9 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
-                    try {
-                        mShimmerService.stopWritingToLog();
-                        Toast.makeText(getReactApplicationContext(), "Stopped writing to log!!!", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();
+                    mShimmerService.stopWritingToLog();
+                    break;
             }
         }
     }

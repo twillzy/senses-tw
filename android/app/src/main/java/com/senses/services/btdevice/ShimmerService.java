@@ -56,6 +56,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class ShimmerService extends Service {
         }
     }
 
-    public void stopWritingToLog() throws IOException {
+    public void stopWritingToLog() {
         if (mEnableLogging) {
             shimmerLog.closeFile();
         }
@@ -168,21 +169,25 @@ public class ShimmerService extends Service {
         }
         CSVReader reader = new CSVReader(new FileReader(shimmerLog.getOutputFile()));
         List<String[]> logEntries = reader.readAll();
+
+        List<String> formatNames = Arrays.asList(logEntries.get(3)[0].split("\t"));
+        Integer indexOfMSecs = formatNames.indexOf("mSecs");
+        Integer indexOfKOhms = formatNames.indexOf("kOhms");
         for (int i = GRANULARITY; i < logEntries.size() - GRANULARITY; i += GRANULARITY) {
             int averageGSRValue = 0;
             for (int j = i; j < i + GRANULARITY; j++) {
-                Integer gsrValue = getIntegerValueFromColumn(0, logEntries.get(j)[0]);
+                Integer gsrValue = getIntegerValueFromColumn(indexOfKOhms, logEntries.get(j)[0]);
                 averageGSRValue += gsrValue;
             }
-            Integer timeOffset = getIntegerValueFromColumn(2, logEntries.get(i)[0]);
+            Integer timeOffset = getIntegerValueFromColumn(indexOfMSecs, logEntries.get(i)[0]);
             averageGSRValue /= GRANULARITY;
 
             timeOffsetAndGSRPairs.put(timeOffset, averageGSRValue);
         }
-        logEntries.clear();
-        PrintWriter writer = new PrintWriter(shimmerLog.getOutputFile());
-        writer.print("");
-        writer.close();
+        //logEntries.clear();
+        //PrintWriter writer = new PrintWriter(shimmerLog.getOutputFile());
+        //writer.print("");
+        //writer.close();
 
         return timeOffsetAndGSRPairs;
     }
