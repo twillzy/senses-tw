@@ -33,13 +33,15 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     public static final String VALUE_OK = "OK";
     public static final String VALUE_CANCEL = "CANCEL";
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
+    private static final String PARAM_RESULT_CODE = "androidDeviceBluetoothEnabled";
     final ReactApplicationContext reactContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ShimmerService mShimmerService;
     private Intent mShimmerIntent = null;
     private Promise promise;
+
     private ServiceConnection mShimmerConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mShimmerService = ((ShimmerService.LocalBinder) service).getService();
@@ -95,6 +97,17 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
         try {
             mShimmerService.stopStreaming();
             Log.d("SHIMMER", "Stop Streaming");
+        } catch (IllegalViewOperationException e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void disconnectShimmerFromAndroidDevice(Promise promise) {
+        this.promise = promise;
+        try {
+            mShimmerService.disconnectShimmer();
+            Log.d("SHIMMER", "Disconnect");
         } catch (IllegalViewOperationException e) {
             promise.reject(e);
         }
@@ -204,15 +217,18 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     break;
                 case DISCONNECTED:
                     Toast.makeText(getReactApplicationContext(), "Lost Connection to Shimmer", Toast.LENGTH_LONG).show();
+                    resolvePromiseWithArgument("connectionStatus", "disconnected");
                     break;
                 case READY_TO_STREAM:
                     mShimmerService.setEnableLogging(true);
                     mShimmerService.startStreamingGSRData();
+                    Toast.makeText(getReactApplicationContext(), "Start timing now!!!", Toast.LENGTH_LONG).show();
                     resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
                     Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();
                     mShimmerService.stopWritingToLog();
+                    resolvePromiseWithArgument("streamingStatus", "STOPPED");
                     break;
             }
         }
