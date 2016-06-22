@@ -131,13 +131,13 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-material-kit')
+    compile project(':@remobile/react-native-splashscreen')
     compile project(':react-native-camera')
     compile project(':react-native-video')
     compile project(':ShimmerAndroidInstrumentDriver')
     compile 'com.facebook.react:react-native:+'
-    // From node_modules
-    compile project(':RNMaterialKit')
-    compile project(':react-native-splashscreen')
     compile group: 'net.sf.opencsv', name: 'opencsv', version: '2.3'
 }
 

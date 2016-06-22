@@ -2,10 +2,11 @@ package com.senses;
 
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactActivity;
-import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.remobile.splashscreen.RCTSplashScreenPackage;
 
 import java.util.Arrays;
@@ -39,6 +40,7 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.asList(
                 new MainReactPackage(),
+                new VectorIconsPackage(),
                 new RCTCameraPackage(),
                 new ReactVideoPackage(),
                 new ReactMaterialKitPackage(),

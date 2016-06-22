@@ -19,7 +19,8 @@ export default class CameraSenses extends Component {
     super(props);
     this.state = {
       image: null,
-      startRecording: true
+      startRecording: true,
+      iconName: "fiber-manual-record"
     };
   }
 
@@ -39,9 +40,14 @@ export default class CameraSenses extends Component {
         <Camera ref="camera"
                 aspect={Camera.constants.Aspect.Fill}
                 style={styles.preview}/>
-        <TouchableOpacity style={styles.captureContainer} onPress={this.record.bind(this)}>
-          <Text style={styles.capture}>[START RECORD]</Text>
-        </TouchableOpacity>
+        <Icon.Button name={this.state.iconName}
+              size={100}
+              color="red"
+              onPress={this.record.bind(this)}
+              backgroundColor="black"
+              borderRadius={0}
+              iconStyle={styles.recordButton}>
+        </Icon.Button>
       </View>
     );
   }
@@ -57,7 +63,7 @@ export default class CameraSenses extends Component {
           this.setState({...this.state, image: data});
         })
         .catch(console.log);
-      this.setState({startRecording: false});
+      this.setState({startRecording: false, iconName: "stop"});
     } else {
       this.refs.camera.stopCapture({
         })
@@ -65,7 +71,7 @@ export default class CameraSenses extends Component {
           console.log(data);
         })
         .catch(console.log);
-      this.setState({startRecording: true});
+      this.setState({startRecording: true, iconName: "fiber-manual-record"});
     }
   }
 }
@@ -81,12 +87,8 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width
   },
-  captureContainer: {
-    position: 'absolute',
-    top: 100
-  },
-  capture: {
-    alignSelf: 'center',
-    marginVertical: 16
-  },
+  recordButton: {
+    marginLeft: Dimensions.get('window').width / 2 - 60,
+    marginVertical: -15
+  }
 });
