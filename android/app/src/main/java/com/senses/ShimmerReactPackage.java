@@ -19,6 +19,7 @@ class ShimmerReactPackage implements ReactPackage {
     private final Activity activity;
 
     public ShimmerReactPackage(Activity activity) {
+        super();
         this.activity = activity;
     }
 
@@ -34,7 +35,6 @@ class ShimmerReactPackage implements ReactPackage {
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new ConnectToHardwareModule(reactContext, activity));
         return modules;

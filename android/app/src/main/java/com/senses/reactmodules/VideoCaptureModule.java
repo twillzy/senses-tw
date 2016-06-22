@@ -2,6 +2,9 @@ package com.senses.reactmodules;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Camera;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
 import android.provider.MediaStore;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -19,12 +22,14 @@ public class VideoCaptureModule extends ReactContextBaseJavaModule implements Li
     static final int REQUEST_VIDEO_CAPTURE = 2;
     private final ReactApplicationContext reactContext;
     private Promise promise;
+    private Activity activity;
 
-    public VideoCaptureModule(ReactApplicationContext reactContext) {
+    public VideoCaptureModule(ReactApplicationContext reactContext, Activity activity) {
         super(reactContext);
         this.reactContext = reactContext;
         this.reactContext.addLifecycleEventListener(this);
         this.reactContext.addActivityEventListener(this);
+        this.activity = activity;
     }
 
     @ReactMethod

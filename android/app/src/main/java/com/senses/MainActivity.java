@@ -1,8 +1,7 @@
 package com.senses;
 
-import com.facebook.react.ReactActivity;
 import com.brentvatne.react.ReactVideoPackage;
-import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
@@ -12,8 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends ReactActivity {
-    private ReactInstanceManager mReactInstanceManager;
-
     /**
      * Returns the name of the main component registered from JavaScript.
      * This is used to schedule rendering of the component.
@@ -44,8 +41,8 @@ public class MainActivity extends ReactActivity {
                 new ReactVideoPackage(),
                 new ReactMaterialKitPackage(),
                 new RCTSplashScreenPackage(this),
-//                new SensesVideoViewPackage(this),
-                new ShimmerReactPackage(this)
+                new ShimmerReactPackage(this),
+                new SensesVideoViewPackage(this)
         );
     }
 }

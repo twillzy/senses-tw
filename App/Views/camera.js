@@ -10,8 +10,7 @@ import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import MK, {
   MKButton,
 } from 'react-native-material-kit';
-// import VideoCaptureModule from './../../App/Modules/VideoCaptureModule';
-import SensesVideoView from './../../App/NativeViews/VideoView';
+import VideoCaptureModule from './../../App/Modules/VideoCaptureModule';
 import Video from 'react-native-video';
 
 export default class Camera extends Component {
@@ -33,7 +32,7 @@ export default class Camera extends Component {
   }
 
   render() {
-    let buttonText = "START RECORDING";
+    let buttonText = "Start Session";
 
     return (
       <View style={GlobalStyles.container}>
@@ -47,21 +46,6 @@ export default class Camera extends Component {
             {buttonText}
           </Text>
         </MKButton>
-        <Video source={{uri: "content://media/external/video/media/22466"}}
-               rate={1.0}
-               volume={1.0}
-               muted={false}
-               paused={false}
-               resizeMode="cover"
-               repeat={true}
-               playInBackground={false}
-               playWhenInactive={false}
-               onLoadStart={this.loadStart}
-               onLoad={this.setDuration}
-               onProgress={this.setTime}
-               onEnd={this.onEnd}
-               onError={this.videoError}
-               style={GlobalStyles.backgroundVideo} />
       </View>
     );
   }

@@ -27,7 +27,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
 
 class senses extends Component {
   render() {
-    var initialRoute = {name: 'connecting'};
+    var initialRoute = {name: 'camera'};
 
     return (
 	  <Navigator
