@@ -2,6 +2,7 @@ package com.senses;
 
 import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.ReactActivity;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
@@ -38,6 +39,7 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.asList(
                 new MainReactPackage(),
+                new RCTCameraPackage(),
                 new ReactVideoPackage(),
                 new ReactMaterialKitPackage(),
                 new RCTSplashScreenPackage(this),
