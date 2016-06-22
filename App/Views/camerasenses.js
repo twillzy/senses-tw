@@ -43,10 +43,10 @@ export default class CameraSenses extends Component {
         <Icon.Button name={this.state.iconName}
               size={100}
               color="red"
-              onPress={this.record.bind(this)}
               backgroundColor="black"
               borderRadius={0}
-              iconStyle={styles.recordButton}>
+              iconStyle={styles.recordButton}
+              onPress={this.record.bind(this)}>
         </Icon.Button>
       </View>
     );
