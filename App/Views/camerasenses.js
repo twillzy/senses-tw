@@ -11,6 +11,7 @@ import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import MK, { MKButton } from 'react-native-material-kit';
 import Video from 'react-native-video';
 import Camera from 'react-native-camera';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class CameraSenses extends Component {
 
@@ -38,7 +39,7 @@ export default class CameraSenses extends Component {
         <Camera ref="camera"
                 aspect={Camera.constants.Aspect.Fill}
                 style={styles.preview}/>
-        <TouchableOpacity onPress={this.record.bind(this)}>
+        <TouchableOpacity style={styles.captureContainer} onPress={this.record.bind(this)}>
           <Text style={styles.capture}>[START RECORD]</Text>
         </TouchableOpacity>
       </View>
@@ -71,8 +72,7 @@ export default class CameraSenses extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'red'
+    flex: 1
   },
   preview: {
     flex: 1,
@@ -80,6 +80,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width
+  },
+  captureContainer: {
+    position: 'absolute',
+    top: 100
   },
   capture: {
     alignSelf: 'center',
