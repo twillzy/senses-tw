@@ -98,11 +98,11 @@ async function connectToShimmer() {
 }
 
 async function enableBluetooth() {
-  console.log(blueToothIsToggledOn);
+  console.log("Bluetooth feature toggle: ", blueToothIsToggledOn);
   if (blueToothIsToggledOn) {
     try {
       var {
-        connectedToBluetooth
+        androidDeviceBluetoothEnabled 
       } = await ConnectToHardwareModule.enableBluetooth();
       return connectedToBluetooth;
     } catch (e) {

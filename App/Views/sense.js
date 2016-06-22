@@ -83,6 +83,7 @@ async function disconnectShimmerFromAndroid() {
 }
 
 async function stopStreaming() {
+  console.log("Stopping streaming service");
   try {
     var {
       streamingStatus

@@ -133,7 +133,6 @@ public class ShimmerService extends Service {
         }
     }
 
-
     public void disconnectShimmer() {
         if (isShimmerConnected()) {
             shimmer.stop();

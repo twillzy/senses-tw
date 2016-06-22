@@ -34,7 +34,7 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     public static final String VALUE_OK = "OK";
     public static final String VALUE_CANCEL = "CANCEL";
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final String PARAM_RESULT_CODE = "connectedToBluetooth";
+    private static final String PARAM_RESULT_CODE = "androidDeviceBluetoothEnabled";
     final ReactApplicationContext reactContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ShimmerService mShimmerService;
