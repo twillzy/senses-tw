@@ -254,6 +254,10 @@ public class ShimmerService extends Service {
                         case Shimmer.MSG_STATE_STOP_STREAMING:
                             createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.STREAMING_STOPPED);
                             break;
+
+                        case Shimmer.MSG_STATE_STREAMING:
+                            createAndBroadcastIntent((ObjectCluster) msg.obj, DeviceStatus.STREAMING);
+                            break;
                     }
 
             }

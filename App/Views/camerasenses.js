@@ -8,6 +8,7 @@ import React, {
 
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 
 export default class CameraSenses extends Component {
 
@@ -46,25 +47,55 @@ export default class CameraSenses extends Component {
 
   record() {
     if (this.state.startRecording) {
-      this.refs.camera.capture({
-          mode: Camera.constants.CaptureMode.video,
-          target: Camera.constants.CaptureTarget.disk
-        })
-        .then(data => {
-          console.log(data);
-          this.setState({...this.state, image: data});
-        })
-        .catch(console.log);
-      this.setState({startRecording: false, iconName: "stop"});
+      startStreaming().then((streamingStatus) => {
+        if (streamingStatus === 'streaming') {
+          this.refs.camera.capture({
+              mode: Camera.constants.CaptureMode.video,
+              target: Camera.constants.CaptureTarget.disk
+            })
+            .then(data => {
+              console.log(data);
+              this.setState({...this.state, image: data});
+            })
+            .catch(console.log);
+          this.setState({startRecording: false, iconName: "stop"});
+        }
+      });
     } else {
-      this.refs.camera.stopCapture({
-        })
-        .then(data => {
-          console.log(data);
-        })
-        .catch(console.log);
-      this.setState({startRecording: true, iconName: "fiber-manual-record"});
+      stopStreaming().then((streamingStatus) => {
+        if (streamingStatus === 'stopped') {
+          this.refs.camera.stopCapture({
+            })
+            .then(data => {
+              console.log(data);
+            })
+            .catch(console.log);
+          this.setState({startRecording: true, iconName: "fiber-manual-record"});
+        }
+      });
     }
+  }
+}
+
+async function startStreaming() {
+  try {
+    var {
+      streamingStatus
+    } = await ConnectToHardwareModule.startStreaming();
+    return streamingStatus;
+  } catch(e) {
+    console.log(e);
+  }
+}
+
+async function stopStreaming() {
+  try {
+    var {
+      streamingStatus
+    } = await ConnectToHardwareModule.stopShimmerStreaming();
+    return streamingStatus;
+  } catch (e) {
+    console.log(e);
   }
 }
 

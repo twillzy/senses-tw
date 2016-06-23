@@ -92,6 +92,17 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
+    public void startStreaming(Promise promise) {
+        this.promise = promise;
+        try {
+            mShimmerService.setEnableLogging(true);
+            mShimmerService.startStreamingGSRData();
+        } catch (IllegalViewOperationException e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void stopShimmerStreaming(Promise promise) {
         this.promise = promise;
         try {
@@ -220,16 +231,17 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("connectionStatus", "disconnected");
                     break;
                 case READY_TO_STREAM:
-//                    mShimmerService.setEnableLogging(true);
-//                    mShimmerService.startStreamingGSRData();
                     Toast.makeText(getReactApplicationContext(), "Ready to Stream", Toast.LENGTH_LONG).show();
                     resolvePromiseWithArgument("connectionStatus", "connected");
-//                    resolvePromiseWithArgument("streamingOn", "OK");
+                    break;
+                case STREAMING:
+                    Toast.makeText(getReactApplicationContext(), "Streaming...", Toast.LENGTH_LONG).show();
+                    resolvePromiseWithArgument("streamingStatus", "streaming");
                     break;
                 case STREAMING_STOPPED:
                     Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();
                     mShimmerService.stopWritingToLog();
-                    resolvePromiseWithArgument("streamingStatus", "STOPPED");
+                    resolvePromiseWithArgument("streamingStatus", "stopped");
                     break;
             }
         }
