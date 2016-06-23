@@ -4,12 +4,8 @@ import React, {
   View,
   StyleSheet,
   Dimensions,
-  TouchableOpacity
 } from 'react-native';
 
-import ReactSplashScreen from '@remobile/react-native-splashscreen';
-import MK, { MKButton } from 'react-native-material-kit';
-import Video from 'react-native-video';
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -28,10 +24,6 @@ export default class CameraSenses extends Component {
     this.props.navigator.push({
       name: property,
     });
-  }
-
-  componentDidMount() {
-    ReactSplashScreen.hide();
   }
 
   render() {

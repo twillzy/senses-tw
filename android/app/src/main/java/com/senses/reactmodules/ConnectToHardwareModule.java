@@ -220,10 +220,11 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("connectionStatus", "disconnected");
                     break;
                 case READY_TO_STREAM:
-                    mShimmerService.setEnableLogging(true);
-                    mShimmerService.startStreamingGSRData();
-                    Toast.makeText(getReactApplicationContext(), "Start timing now!!!", Toast.LENGTH_LONG).show();
-                    resolvePromiseWithArgument("streamingOn", "OK");
+//                    mShimmerService.setEnableLogging(true);
+//                    mShimmerService.startStreamingGSRData();
+                    Toast.makeText(getReactApplicationContext(), "Ready to Stream", Toast.LENGTH_LONG).show();
+                    resolvePromiseWithArgument("connectionStatus", "connected");
+//                    resolvePromiseWithArgument("streamingOn", "OK");
                     break;
                 case STREAMING_STOPPED:
                     Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();

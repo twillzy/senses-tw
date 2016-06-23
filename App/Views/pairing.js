@@ -11,6 +11,7 @@ import MK, {
   MKSpinner
 } from 'react-native-material-kit';
 
+import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EvilIcon from 'react-native-vector-icons/EvilIcons'
@@ -20,12 +21,22 @@ export default class Pairing extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showButton: true
+      showButton: true,
+      buttonText: 'Pair Device',
+      showConnectStatusMessage: false,
+      connectStatusMessage: '',
+      streamReady: false
     };
   }
 
   componentDidMount() {
     ReactSplashScreen.hide();
+  }
+
+  navigate(property){
+    this.props.navigator.push({
+      name: property,
+    });
   }
 
   render() {
@@ -34,7 +45,7 @@ export default class Pairing extends Component {
         borderRadius={4}
         style={styles.pairButton}
         onPress={this.handlePress.bind(this)}>
-          <Text>Pair Device</Text>
+          <Text>{this.state.buttonText}</Text>
       </MKButton>);
 
     const mkSpinner = (
@@ -45,13 +56,20 @@ export default class Pairing extends Component {
       <Text style={styles.spinnerText}>Pairing with Shimmer</Text>
     );
 
+    const connectStatusMessage = (
+      <Text style={styles.connectStatusMessage}>{this.state.connectStatusMessage}</Text>
+    );
+
     return (
       <View style={styles.container}>
         <View style={styles.logo}>
           <FontAwesomeIcon name="snapchat-ghost"
                            size={150}
-                           color="white">
+                           color="yellow">
           </FontAwesomeIcon>
+        </View>
+        <View style={styles.connectStatusMessageContainer}>
+          {this.state.showConnectStatusMessage && connectStatusMessage}
         </View>
         <View style={styles.pairButtonContainer}>
           {this.state.showButton && mkButton}
@@ -65,7 +83,31 @@ export default class Pairing extends Component {
   }
 
   handlePress() {
-    this.setState({showButton: false});
+    if (this.state.streamReady) {
+      this.navigate('camerasenses');
+    } else {
+      this.setState({showButton: false, showConnectStatusMessage: false});
+      connectToShimmer().then((connectionStatus) => {
+        if (connectionStatus === 'connected') {
+          const connectStatusMessage = "Great, your devices have been paired\nsuccessfully!"
+          this.setState({buttonText: 'Start Session', showButton: true, showConnectStatusMessage: true, connectStatusMessage: connectStatusMessage, streamReady: true});
+        } else {
+          const connectStatusMessage = "Unfortunately your connection attempt\nwas unsuccessful, please try again";
+          this.setState({showButton: true, showConnectStatusMessage: true, connectStatusMessage: connectStatusMessage});
+        }
+      });
+    }
+  }
+}
+
+async function connectToShimmer() {
+  try {
+    var {
+      connectionStatus
+    } = await ConnectToHardwareModule.connectToShimmer();
+    return connectionStatus;
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -99,5 +141,14 @@ const styles = StyleSheet.create({
   },
   spinnerText: {
     color: 'white'
+  },
+  connectStatusMessageContainer: {
+    alignItems: 'center',
+    marginTop: -20,
+    marginBottom: 20
+  },
+  connectStatusMessage: {
+    color: 'white',
+    textAlign: 'center'
   }
 });
