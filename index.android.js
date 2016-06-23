@@ -5,6 +5,7 @@ import React, {
   BackAndroid,
 } from 'react-native';
 
+import Pairing from './App/Views/pairing';
 import Connect from './App/Views/connect';
 import Sense from './App/Views/sense';
 import Results from './App/Views/results';
@@ -14,7 +15,10 @@ var _navigator;
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
-  if (route.name === 'connecting') {
+
+  if (route.name === 'pairing') {
+    return <Pairing navigator={navigationOperations} />
+  } else if (route.name === 'connecting') {
     return <Connect navigator={navigationOperations}/>
   } else if (route.name === 'sensing') {
     return <Sense navigator={navigationOperations}/>
@@ -27,7 +31,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
 
 class senses extends Component {
   render() {
-    var initialRoute = {name: 'connecting'};
+    var initialRoute = {name: 'pairing'};
 
     return (
 	  <Navigator

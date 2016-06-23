@@ -9,7 +9,6 @@ import MK, {
 } from 'react-native-material-kit';
 
 import blueToothIsToggledOn from '../../featureToggle';
-
 import ConnectToHardwareModule from './../../App/Modules/ConnectToHardwareModule';
 import ReactSplashScreen from '@remobile/react-native-splashscreen';
 import GlobalStyles from './../../App/Styles/globalStyles';
@@ -102,7 +101,7 @@ async function enableBluetooth() {
   if (blueToothIsToggledOn) {
     try {
       var {
-        androidDeviceBluetoothEnabled 
+        androidDeviceBluetoothEnabled
       } = await ConnectToHardwareModule.enableBluetooth();
       return connectedToBluetooth;
     } catch (e) {

@@ -49,45 +49,22 @@ export default class Sense extends Component {
     );
   }
 
-  //handlePress(event) {
-    //var self = this;
-    //self.setState({buttonHasBeenPressed: true});
-    //disconnectShimmerFromAndroid().then(() => {
-                                        //console.log("Disconnected Shimmer from Android");
-    //});
-  //}
-
   handlePress(event) {
-    var self = this;
-    console.log(self.state.buttonHasBeenPressed);
-    //self.setState({buttonHasBeenPressed: true});
     stopStreaming().then((streamingStatus) => {
-      console.log(streamingStatus);
-      //disconnectShimmerFromAndroid();
+      console.log("streamingStatus " + streamingStatus);
       if (streamingStatus === "STOPPED") {
-        self._navigate('results');
+        this._navigate('results');
       }
     });
   }
 }
 
-async function disconnectShimmerFromAndroid() {
-  console.log("Disconnecting shimmer from Android");
-  try {
-    var {
-      connectionStatus
-    } = await ConnectToHardwareModule.disconnectShimmerFromAndroidDevice();
-  } catch (error) {
-    console.log(error);
-  } 
-}
-
 async function stopStreaming() {
-  console.log("Stopping streaming service");
   try {
     var {
       streamingStatus
     } = await ConnectToHardwareModule.stopShimmerStreaming();
+    return streamingStatus;
   } catch (error) {
     console.error(error);
   }
