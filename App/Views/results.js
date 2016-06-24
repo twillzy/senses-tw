@@ -84,7 +84,8 @@ export default class Results extends Component {
 
   render () {
     const videoPlayback = (
-      <Video source={{uri: this.state.videoUri}}
+      <Video ref="video"
+             source={{uri: this.state.videoUri}}
              rate={1.0}
              volume={1.0}
              muted={false}
