@@ -6,26 +6,18 @@ import React, {
 } from 'react-native';
 
 import Pairing from './App/Views/pairing';
-import Connect from './App/Views/connect';
-import Sense from './App/Views/sense';
 import Results from './App/Views/results';
 import CameraSenses from './App/Views/camerasenses';
 
-var _navigator;
-
-var RouteMapper = function(route, navigationOperations, onComponentRef) {
-  _navigator = navigationOperations;
+let RouteMapper = (route, navigationOperations, onComponentRef) => {
+  let _navigator = navigationOperations;
 
   if (route.name === 'pairing') {
-    return <Pairing navigator={navigationOperations} />
-  } else if (route.name === 'connecting') {
-    return <Connect navigator={navigationOperations}/>
-  } else if (route.name === 'sensing') {
-    return <Sense navigator={navigationOperations}/>
-  } else if (route.name === 'results') {
-    return <Results navigator={navigationOperations}/>
+    return <Pairing navigator={navigationOperations}/>
   } else if (route.name == 'camerasenses') {
     return <CameraSenses navigator={navigationOperations}/>
+  } else if (route.name === 'results') {
+    return <Results navigator={navigationOperations} videoUri={route.videoUri} {...route.passProps}/>
   }
 };
 

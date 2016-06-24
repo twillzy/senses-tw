@@ -15,15 +15,16 @@ export default class CameraSenses extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      image: null,
+      videoUri: null,
       startRecording: true,
       iconName: "fiber-manual-record"
     };
   }
 
-  _navigate(property){
+  navigate(property){
     this.props.navigator.push({
       name: property,
+      videoUri: this.state.videoUri
     });
   }
 
@@ -55,7 +56,7 @@ export default class CameraSenses extends Component {
             })
             .then(data => {
               console.log(data);
-              this.setState({...this.state, image: data});
+              this.setState({...this.state, videoUri: data});
             })
             .catch(console.log);
           this.setState({startRecording: false, iconName: "stop"});
@@ -68,9 +69,9 @@ export default class CameraSenses extends Component {
             })
             .then(data => {
               console.log(data);
+              this.navigate('results');
             })
             .catch(console.log);
-          this.setState({startRecording: true, iconName: "fiber-manual-record"});
         }
       });
     }

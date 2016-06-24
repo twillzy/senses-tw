@@ -221,7 +221,6 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
             DeviceStatus status = (DeviceStatus) intent.getSerializableExtra("ShimmerState");
             switch (status) {
                 case CONNECTED:
-                    Toast.makeText(getReactApplicationContext(), "Connected to Shimmer", Toast.LENGTH_LONG).show();
                     break;
                 case CONNECTING:
                     Log.d("Shimmer", "Connecting to Shimmer now");
@@ -231,15 +230,12 @@ public class ConnectToHardwareModule extends ReactContextBaseJavaModule implemen
                     resolvePromiseWithArgument("connectionStatus", "disconnected");
                     break;
                 case READY_TO_STREAM:
-                    Toast.makeText(getReactApplicationContext(), "Ready to Stream", Toast.LENGTH_LONG).show();
                     resolvePromiseWithArgument("connectionStatus", "connected");
                     break;
                 case STREAMING:
-                    Toast.makeText(getReactApplicationContext(), "Streaming...", Toast.LENGTH_LONG).show();
                     resolvePromiseWithArgument("streamingStatus", "streaming");
                     break;
                 case STREAMING_STOPPED:
-                    Toast.makeText(getReactApplicationContext(), "Streaming stopped", Toast.LENGTH_LONG).show();
                     mShimmerService.stopWritingToLog();
                     resolvePromiseWithArgument("streamingStatus", "stopped");
                     break;
