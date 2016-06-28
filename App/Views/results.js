@@ -29,7 +29,6 @@ export default class Results extends Component {
       fetchedGsrValues: [],
       minTimeOffset: 0,
       maxTimeOffset: 0,
-      replayIsOverWhenBackToBeginning: 0,
       videoUri: this.props.videoUri,
       isVideoOnPlay: false,
       isVideoOnPause: false,
@@ -76,8 +75,11 @@ export default class Results extends Component {
                  duration: timeDiff
                }));
     }
-    this.setState({isVideoOnPlay: true});
     Animated.sequence(timingSequence).start();
+  }
+
+  sliderValueOnChange(sliderValue) {
+
   }
 
   normaliseGSR(gsrValue) {
@@ -97,6 +99,7 @@ export default class Results extends Component {
 
   imagePress() {
     this.setState({isVideoOnPlay: true});
+    this.animateGSRValues();
   }
 
   videoPress() {
@@ -139,14 +142,6 @@ export default class Results extends Component {
            style={styles.head}
            source={require('./../Assets/images/head.png')}/>*/}
 
-          <View style={styles.rowContainer}>
-            <MKButton backgroundColor="white"
-                      borderRadius={4}
-                      padding={15}
-                      onPress={this.animateGSRValues.bind(this)}>
-              <Text>py></Text>
-            </MKButton>
-          </View>
         </View>
 
         <View style={styles.videoViewContainer}>
@@ -164,7 +159,8 @@ export default class Results extends Component {
                     style={styles.slider}
                     min={this.state.minTimeOffset}
                     max={this.state.maxTimeOffset}
-                    lowerTrackColor='#FFFFFF'/>
+                    lowerTrackColor='#FFFFFF'
+                    onChange={this.sliderValueOnChange.bind(this)}/>
           <Text style={styles.sliderText}>{this.state.sliderEndTime}</Text>
         </View>
       </View>
