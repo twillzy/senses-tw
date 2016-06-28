@@ -7,6 +7,7 @@ import React, {
   StyleSheet,
   Easing,
   Dimensions,
+  TouchableOpacity
 } from 'react-native';
 
 import MK, {
@@ -28,10 +29,13 @@ export default class Results extends Component {
       fetchedGsrValues: [],
       minTimeOffset: 0,
       maxTimeOffset: 0,
-      isReplaying: false,
       replayIsOverWhenBackToBeginning: 0,
       videoUri: this.props.videoUri,
-      pressPlay: false
+      isVideoOnPlay: false,
+      isVideoOnPause: false,
+      isVideoOnEnd: false,
+      sliderCurrentTime: "00:00",
+      sliderEndTime: "00:00"
     };
   }
 
@@ -51,8 +55,6 @@ export default class Results extends Component {
   }
 
   animateGSRValues() {
-    this.setState({isReplaying: true});
-
     this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
       this.refs.timelineSlider.value = timeOffset.value;
     });
@@ -74,7 +76,7 @@ export default class Results extends Component {
                  duration: timeDiff
                }));
     }
-    this.setState({pressPlay: true});
+    this.setState({isVideoOnPlay: true});
     Animated.sequence(timingSequence).start();
   }
 
@@ -82,22 +84,43 @@ export default class Results extends Component {
     return (((gsrValue - this.state.minGSRValue) / (this.state.maxGSRValue - this.state.minGSRValue)) * this.state.scaling) + this.state.offset;
   }
 
+  _onLoad(data) {
+    this.setState({sliderEndTime: data.duration});
+  }
+
+  _onLoadStart() {
+  }
+
+  _onEnd() {
+    this.setState({isVideoOnPlay: false});
+  }
+
+  imagePress() {
+    this.setState({isVideoOnPlay: true});
+  }
+
+  videoPress() {
+    this.setState({isVideoOnPause: !this.state.isVideoOnPause});
+  }
+
   render () {
     const videoPlayback = (
+
       <Video ref="video"
              source={{uri: this.state.videoUri}}
              rate={1.0}
              volume={1.0}
              muted={false}
-             paused={false}
+             paused={this.state.isVideoOnPause}
              resizeMode="stretch"
              repeat={false}
              playInBackground={false}
              playWhenInactive={false}
-             onLoadStart={this.loadStart}
-             onLoad={this.setDuration}
+             onLoadStart={this._onLoadStart.bind(this)}
+             onLoad={this._onLoad.bind(this)}
              onProgress={this.setTime}
-             onEnd={this.onEnd}
+             onSeek={this.onSeek}
+             onEnd={this._onEnd.bind(this)}
              onError={this.videoError}
              style={styles.backgroundVideo} />);
 
@@ -117,11 +140,6 @@ export default class Results extends Component {
            source={require('./../Assets/images/head.png')}/>*/}
 
           <View style={styles.rowContainer}>
-            <MKSlider ref="timelineSlider"
-                      style={styles.slider}
-                      min={this.state.minTimeOffset}
-                      max={this.state.maxTimeOffset}
-                      lowerTrackColor='#FFFFFF'/>
             <MKButton backgroundColor="white"
                       borderRadius={4}
                       padding={15}
@@ -132,8 +150,22 @@ export default class Results extends Component {
         </View>
 
         <View style={styles.videoViewContainer}>
-          {this.state.pressPlay && videoPlayback}
-          {!this.state.pressPlay && videoImage}
+          <TouchableOpacity onPress={this.videoPress.bind(this)}>
+            {this.state.isVideoOnPlay && videoPlayback}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this.imagePress.bind(this)}>
+            {!this.state.isVideoOnPlay && videoImage}
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.sliderContainer}>
+          <Text style={styles.sliderText}>{this.state.sliderCurrentTime}</Text>
+          <MKSlider ref="timelineSlider"
+                    style={styles.slider}
+                    min={this.state.minTimeOffset}
+                    max={this.state.maxTimeOffset}
+                    lowerTrackColor='#FFFFFF'/>
+          <Text style={styles.sliderText}>{this.state.sliderEndTime}</Text>
         </View>
       </View>
     );
@@ -156,7 +188,7 @@ var styles = StyleSheet.create({
     flex: 1
   },
   figureHeadViewContainer: {
-    flex: 1,
+    flex: 7,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: "#4E92DF"
@@ -177,10 +209,10 @@ var styles = StyleSheet.create({
     alignSelf: 'center',
   },
   slider: {
-    width: 300,
+    width: 220,
   },
   videoViewContainer: {
-    flex: 1,
+    flex: 7,
     justifyContent: 'center',
     flexDirection: 'row',
     backgroundColor: '#4E92DF'
@@ -189,4 +221,15 @@ var styles = StyleSheet.create({
     width: Dimensions.get('window').width / 2,
     height: Dimensions.get('window').height / 2
   },
+  sliderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    flexDirection: 'row'
+  },
+  sliderText: {
+    color: 'white',
+    marginHorizontal: 10
+  }
 });
