@@ -7,7 +7,8 @@ import React, {
   StyleSheet,
   Easing,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  PanResponder
 } from 'react-native';
 
 import MK, {
@@ -33,8 +34,11 @@ export default class Results extends Component {
       isVideoOnPlay: false,
       isVideoOnPause: false,
       isVideoOnEnd: false,
+      isAnimating: false,
       sliderCurrentTime: "00:00",
-      sliderEndTime: "00:00"
+      sliderEndTime: "00:00",
+      moving: false,
+      timeOffsetAndGsrObject: {}
     };
   }
 
@@ -51,15 +55,34 @@ export default class Results extends Component {
     }).catch((error) => {
       console.log(error);
     });
+
+    this.holderPanResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => true,
+      onPanResponderGrant: (e, gestureState) => {
+          // this.setState({moving: true});
+      },
+      onPanResponderMove: (e, gestureState) => {
+        // update timeOffsetAndGsrObject
+        console.log("i'm moving");
+      },
+      onPanResponderRelease: (e, gesture) => {
+        // do animation
+        console.log("i'm released");
+        this.animateGSRValues(this.state.timeOffsetAndGsrObject);
+      }
+    });
   }
 
-  animateGSRValues() {
+  animateGSRValues(gsrValues) {
+    this.setState({isAnimating: true});
+
     this.state.timeOffsetAndGsr.x.addListener((timeOffset) => {
       this.refs.timelineSlider.value = timeOffset.value;
     });
 
     var timingSequence = [];
-    var timeOffsets = Object.keys(this.state.fetchedGsrValues);
+    var timeOffsets = Object.keys(gsrValues);
     var self = this;
 
     for (var i = 1; i < timeOffsets.length; i++) {
@@ -70,7 +93,7 @@ export default class Results extends Component {
       timingSequence.push(
         Animated.timing(self.state.timeOffsetAndGsr,
                {
-                 toValue: {x: currentTimeOffset, y: self.normaliseGSR(self.state.fetchedGsrValues[currentTimeOffset])},
+                 toValue: {x: currentTimeOffset, y: self.normaliseGSR(gsrValues[currentTimeOffset])},
                  easing: Easing.linear,
                  duration: timeDiff
                }));
@@ -79,7 +102,25 @@ export default class Results extends Component {
   }
 
   sliderValueOnChange(sliderValue) {
+    if (this.state.isVideoOnPlay || this.state.isAnimating) {
+      return;
+    }
 
+    let timeOffsets = Object.keys(this.state.fetchedGsrValues);
+
+    let fetchedGsrValues = timeOffsets.filter((time) => {
+      return time >= sliderValue;
+    });
+
+    let newTimeOffSetsAndGsrObject = {};
+
+    fetchedGsrValues.forEach((time, index, array) => {
+      newTimeOffSetsAndGsrObject[time] = this.state.fetchedGsrValues[time];
+    });
+
+    console.log(JSON.stringify(newTimeOffSetsAndGsrObject));
+
+    this.setState({timeOffsetAndGsrObject: newTimeOffSetsAndGsrObject});
   }
 
   normaliseGSR(gsrValue) {
@@ -94,12 +135,12 @@ export default class Results extends Component {
   }
 
   _onEnd() {
-    this.setState({isVideoOnPlay: false});
+    this.setState({isVideoOnPlay: false, isAnimating: false});
   }
 
   imagePress() {
     this.setState({isVideoOnPlay: true});
-    this.animateGSRValues();
+    this.animateGSRValues(this.state.fetchedGsrValues);
   }
 
   videoPress() {
@@ -155,12 +196,14 @@ export default class Results extends Component {
 
         <View style={styles.sliderContainer}>
           <Text style={styles.sliderText}>{this.state.sliderCurrentTime}</Text>
-          <MKSlider ref="timelineSlider"
-                    style={styles.slider}
-                    min={this.state.minTimeOffset}
-                    max={this.state.maxTimeOffset}
-                    lowerTrackColor='#FFFFFF'
-                    onChange={this.sliderValueOnChange.bind(this)}/>
+          <View {...this.holderPanResponder.panHandlers}>
+            <MKSlider ref="timelineSlider"
+                      style={styles.slider}
+                      min={this.state.minTimeOffset}
+                      max={this.state.maxTimeOffset}
+                      lowerTrackColor='#FFFFFF'
+                      onChange={this.sliderValueOnChange.bind(this)}/>
+          </View>
           <Text style={styles.sliderText}>{this.state.sliderEndTime}</Text>
         </View>
       </View>
