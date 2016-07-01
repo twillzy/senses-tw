@@ -52,6 +52,7 @@ export default class Results extends Component {
       this.setState({maxGSRValue: Math.max(...Object.values(this.state.fetchedGsrValues))});
       this.setState({scaling: 135});
       this.setState({offset: 0});
+      console.warn(this.state.maxTimeOffset);
     }).catch((error) => {
       console.log(error);
     });
@@ -69,7 +70,6 @@ export default class Results extends Component {
       onPanResponderRelease: (e, gesture) => {
         // do animation
         console.log("i'm released");
-        this.animateGSRValues(this.state.timeOffsetAndGsrObject);
       }
     });
   }
@@ -118,9 +118,7 @@ export default class Results extends Component {
       newTimeOffSetsAndGsrObject[time] = this.state.fetchedGsrValues[time];
     });
 
-    console.log(JSON.stringify(newTimeOffSetsAndGsrObject));
-
-    this.setState({timeOffsetAndGsrObject: newTimeOffSetsAndGsrObject});
+    this.animateGSRValues(newTimeOffSetsAndGsrObject);
   }
 
   normaliseGSR(gsrValue) {
@@ -196,14 +194,12 @@ export default class Results extends Component {
 
         <View style={styles.sliderContainer}>
           <Text style={styles.sliderText}>{this.state.sliderCurrentTime}</Text>
-          <View {...this.holderPanResponder.panHandlers}>
-            <MKSlider ref="timelineSlider"
-                      style={styles.slider}
-                      min={this.state.minTimeOffset}
-                      max={this.state.maxTimeOffset}
-                      lowerTrackColor='#FFFFFF'
-                      onChange={this.sliderValueOnChange.bind(this)}/>
-          </View>
+          <MKSlider ref="timelineSlider"
+                    style={styles.slider}
+                    min={this.state.minTimeOffset}
+                    max={this.state.maxTimeOffset}
+                    lowerTrackColor='#FFFFFF'
+                    onConfirm={this.sliderValueOnChange.bind(this)}/>
           <Text style={styles.sliderText}>{this.state.sliderEndTime}</Text>
         </View>
       </View>
