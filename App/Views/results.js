@@ -34,11 +34,14 @@ export default class Results extends Component {
       isVideoOnPlay: false,
       isVideoOnPause: false,
       isVideoOnEnd: false,
+      isVideoSeeking: false,
       isAnimating: false,
       sliderCurrentTime: "00:00",
       sliderEndTime: "00:00",
       moving: false,
-      timeOffsetAndGsrObject: {}
+      timeOffsetAndGsrObject: {},
+      seeking: 0,
+      newStartTime: 0
     };
   }
 
@@ -119,6 +122,7 @@ export default class Results extends Component {
     });
 
     this.animateGSRValues(newTimeOffSetsAndGsrObject);
+    this.setState({isVideoOnPlay: true, isVideoSeeking: true, newStartTime: fetchedGsrValues[0]});
   }
 
   normaliseGSR(gsrValue) {
@@ -132,8 +136,15 @@ export default class Results extends Component {
   _onLoadStart() {
   }
 
+  _onProgress(data) {
+    if (this.state.isVideoSeeking && !this.state.seeking) {
+      this.refs.video.seek(this.state.newStartTime / 1000);
+      this.setState({seeking: true});
+    }
+  }
+
   _onEnd() {
-    this.setState({isVideoOnPlay: false, isAnimating: false});
+    this.setState({isVideoOnPlay: false, isAnimating: false, isVideoSeeking: false, seeking: false});
   }
 
   imagePress() {
@@ -160,7 +171,7 @@ export default class Results extends Component {
              playWhenInactive={false}
              onLoadStart={this._onLoadStart.bind(this)}
              onLoad={this._onLoad.bind(this)}
-             onProgress={this.setTime}
+             onProgress={this._onProgress.bind(this)}
              onSeek={this.onSeek}
              onEnd={this._onEnd.bind(this)}
              onError={this.videoError}
