@@ -229,8 +229,8 @@ public class ShimmerService extends Service {
                     break;
 
                 case Shimmer.MESSAGE_TOAST:
-                    Log.d("toast", msg.getData().getString(Shimmer.TOAST));
-                    Toast.makeText(getApplicationContext(), msg.getData().getString(Shimmer.TOAST), Toast.LENGTH_LONG).show();
+//                    Log.d("toast", msg.getData().getString(Shimmer.TOAST));
+//                    Toast.makeText(getApplicationContext(), msg.getData().getString(Shimmer.TOAST), Toast.LENGTH_LONG).show();
                     break;
 
                 case Shimmer.MESSAGE_STATE_CHANGE:

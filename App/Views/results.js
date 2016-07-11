@@ -55,25 +55,9 @@ export default class Results extends Component {
       this.setState({maxGSRValue: Math.max(...Object.values(this.state.fetchedGsrValues))});
       this.setState({scaling: 135});
       this.setState({offset: 0});
-      console.warn(this.state.maxTimeOffset);
+      console.log(this.state.maxTimeOffset);
     }).catch((error) => {
       console.log(error);
-    });
-
-    this.holderPanResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onPanResponderGrant: (e, gestureState) => {
-          // this.setState({moving: true});
-      },
-      onPanResponderMove: (e, gestureState) => {
-        // update timeOffsetAndGsrObject
-        console.log("i'm moving");
-      },
-      onPanResponderRelease: (e, gesture) => {
-        // do animation
-        console.log("i'm released");
-      }
     });
   }
 
@@ -130,7 +114,7 @@ export default class Results extends Component {
   }
 
   _onLoad(data) {
-    this.setState({sliderEndTime: data.duration});
+    this.setState({sliderEndTime: data.duration.toFixed(2)});
   }
 
   _onLoadStart() {
@@ -184,16 +168,6 @@ export default class Results extends Component {
 
     return (
       <View style={styles.container}>
-        <View style={styles.figureHeadViewContainer}>
-          <Animated.View style={[styles.bar, {height: this.state.timeOffsetAndGsr.y}]}>
-          </Animated.View>
-
-          {/*<Image
-           style={styles.head}
-           source={require('./../Assets/images/head.png')}/>*/}
-
-        </View>
-
         <View style={styles.videoViewContainer}>
           <TouchableOpacity onPress={this.videoPress.bind(this)}>
             {this.state.isVideoOnPlay && videoPlayback}
@@ -201,6 +175,16 @@ export default class Results extends Component {
           <TouchableOpacity onPress={this.imagePress.bind(this)}>
             {!this.state.isVideoOnPlay && videoImage}
           </TouchableOpacity>
+
+          <View style={styles.figureHeadViewContainer}>
+            <Animated.View style={[styles.bar, {height: this.state.timeOffsetAndGsr.y}]}>
+            </Animated.View>
+
+            <Image
+             style={styles.head}
+             source={require('./../Assets/images/head.png')}/>
+
+          </View>
         </View>
 
         <View style={styles.sliderContainer}>
@@ -234,38 +218,37 @@ var styles = StyleSheet.create({
     flex: 1
   },
   figureHeadViewContainer: {
-    flex: 7,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: "#4E92DF"
+    position: 'absolute',
+    height: 150,
+    left: 0
   },
   bar: {
     backgroundColor: '#66E5C8',
-    width: 250,
+    width: 120,
     position: 'absolute',
     bottom: 1,
-    left: 50,
+    left: Dimensions.get('window').width - 120,
   },
   rowContainer: {
     flexDirection: 'row',
   },
   head: {
-    height: 500,
-    width: 300,
-    alignSelf: 'center',
+    height: 150,
+    width: 120,
+    left: Dimensions.get('window').width - 120
   },
   slider: {
     width: 220,
   },
   videoViewContainer: {
-    flex: 7,
+    flex: 15,
     justifyContent: 'center',
     flexDirection: 'row',
     backgroundColor: '#4E92DF'
   },
   backgroundVideo: {
-    width: Dimensions.get('window').width / 2,
-    height: Dimensions.get('window').height / 2
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
   },
   sliderContainer: {
     flex: 1,
